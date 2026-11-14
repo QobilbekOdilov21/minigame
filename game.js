@@ -41,13 +41,13 @@ const SHOP=[
 ];
 const QUIZZES = window.MAZE_QUIZ_BANK || [];
 if(QUIZZES.length!==1000) console.error('IT savollar bazasi yuklanmagan:',QUIZZES.length);
-const app={screen:'home',mode:'team',room:'',isHost:false,hostPlays:true,peer:null,conn:null,clients:new Map(),connectionReady:false,localId:null,localName:'',config:null,world:null,view:null,map:null,discovered:new Set(),eventsSeen:new Set(),lastSnapshotAt:0,controls:{dx:0,dy:0,aim:0,fire:false,run:false},keys:new Set(),mouse:{x:0,y:0},usingPointer:false,mobileAim:0,joystickPointer:null,shopOpen:false,scoreOpen:false,puzzleOpen:null,meetingOpen:false,audio:false,audioCtx:null,lastTick:0,lastNet:0,lastHud:0,particles:[],screenShake:0,feed:[],heroTime:0,renderStarted:false,connectionTimeout:null};
+const app={screen:'home',mode:'team',room:'',isHost:false,hostPlays:true,peer:null,conn:null,clients:new Map(),connectionReady:false,localId:null,localName:'',config:null,world:null,view:null,map:null,discovered:new Set(),eventsSeen:new Set(),lastSnapshotAt:0,controls:{dx:0,dy:0,aim:0,fire:false,run:false},keys:new Set(),mouse:{x:0,y:0},usingPointer:false,mobileAim:0,joystickPointer:null,shopOpen:false,scoreOpen:false,puzzleOpen:null,meetingOpen:false,audio:false,audioCtx:null,lastTick:0,lastNet:0,lastHud:0,particles:[],screenShake:0,feed:[],heroTime:0,renderStarted:false,connectionTimeout:null,renderScale:1,lowFpsStreak:0,highFpsStreak:0,localVisual:null,visibilityCache:null,tileCache:null,viewVersion:0};
 const randomRoom=()=>{const chars='ABCDEFGHJKLMNPQRSTUVWXYZ23456789',arr=new Uint8Array(6);crypto.getRandomValues(arr);return [...arr].map(n=>chars[n%chars.length]).join('')};
 const roomPeerId=code=>'mazeclash-sysone-'+code.toLowerCase();
 const shareUrl=()=>`${location.origin}${location.pathname}?room=${encodeURIComponent(app.room)}`;
 const setStatus=(s,error=false)=>{$('statusText').textContent=s;$('statusLight').classList.toggle('error',error)};
 const toast=(s,bad=false)=>{const n=document.createElement('div');n.className='toast '+(bad?'bad':'ok');n.textContent=s;$('toastArea').append(n);setTimeout(()=>n.remove(),4200)};
-const showScreen=name=>{app.screen=name;for(const id of ['homeScreen','configScreen','joinScreen','lobbyScreen','gameScreen'])$(id).classList.toggle('hidden',id!==name+'Screen');if(name==='game')$('gameCanvas').focus({preventScroll:true});window.scrollTo(0,0)};
+const showScreen=name=>{app.screen=name;document.body.classList.toggle('playing-game',name==='game');for(const id of ['homeScreen','configScreen','joinScreen','lobbyScreen','gameScreen'])$(id).classList.toggle('hidden',id!==name+'Screen');if(name==='game'){$('gameCanvas').focus({preventScroll:true});app.gameCanvasRect=null;}window.scrollTo(0,0)};
 const getConfig=()=>({mode:app.mode,duration:Number($('cfgDuration').value)*60,lives:app.mode==='impostor'?1:Number($('cfgLives').value),rounds:Number($('cfgRounds').value),mapSize:$('cfgMap').value,ammo:$('cfgAmmo').value,friendly:$('cfgFriendly').checked,puzzles:app.mode==='impostor'||app.mode==='escape'?true:$('cfgPuzzles').checked,radar:$('cfgRadar').checked,monsters:$('cfgMonsters').value,hostPlays:$('cfgHostPlays').checked});
 const colorFor=(i)=>`hsl(${(i*137.508+32)%360} 72% 65%)`;
 const playTone=(kind)=>{if(!app.audio)return;try{const C=window.AudioContext||window.webkitAudioContext;if(!C)return;app.audioCtx??=new C();if(app.audioCtx.state==='suspended')app.audioCtx.resume();const ctx=app.audioCtx,osc=ctx.createOscillator(),gain=ctx.createGain(),now=ctx.currentTime;osc.type=kind==='hit'?'sawtooth':'triangle';osc.frequency.setValueAtTime(kind==='shot'?125:kind==='pickup'?580:kind==='death'?60:340,now);osc.frequency.exponentialRampToValueAtTime(kind==='shot'?55:kind==='death'?20:kind==='pickup'?930:180,now+.12);gain.gain.setValueAtTime(kind==='shot'?.07:.045,now);gain.gain.exponentialRampToValueAtTime(.001,now+.14);osc.connect(gain).connect(ctx.destination);osc.start(now);osc.stop(now+.15)}catch{}};
@@ -257,7 +257,7 @@ class World{
 function lobbyParticipants(){return [...(app.lobbyPlayers?.values()||[])];}
 function broadcastLobby(){if(!app.isHost)return;const players=lobbyParticipants();const data={t:'lobby',players:players.map((p,i)=>({...p,team:app.config.mode==='team'||app.config.mode==='double'?i%2:-1,color:app.config.mode==='team'||app.config.mode==='double'?TEAMS[i%2].color:colorFor(i)})),config:app.config,room:app.room};app.lobbyView=data;for(const con of app.clients.values())send(con,data);renderLobby()}
 function send(conn,data){try{if(conn?.open)conn.send(data)}catch(e){console.warn('Peer send failed',e)}}
-function closePeer(){if(app.peer)try{app.peer.destroy()}catch{};app.peer=null;app.conn=null;app.clients.clear();app.connectionReady=false;app.world=null;app.view=null;app.lobbyPlayers=null;app.lobbyView=null;app.map=null;app.discovered.clear();app.eventsSeen.clear();app.particles=[];app.room='';app.isHost=false;app.localId=null;app.shopOpen=false;app.meetingOpen=false;app.puzzleOpen=null;closeAllModals()}
+function closePeer(){if(app.peer)try{app.peer.destroy()}catch{};app.peer=null;app.conn=null;app.clients.clear();app.connectionReady=false;app.world=null;app.view=null;app.lobbyPlayers=null;app.lobbyView=null;app.map=null;app.discovered.clear();app.eventsSeen.clear();app.particles=[];app.tileCache=null;app.visibilityCache=null;app.localVisual=null;app.room='';app.isHost=false;app.localId=null;app.shopOpen=false;app.meetingOpen=false;app.puzzleOpen=null;closeAllModals()}
 function showLobby(){showScreen('lobby');$('lobbyRoomCode').textContent=app.room;$('shareUrl').value=shareUrl();$('hostLobbyControls').classList.toggle('hidden',!app.isHost);$('waitHostNotice').classList.toggle('hidden',app.isHost);renderLobby()}
 function renderLobby(){const data=app.isHost?app.lobbyView:app.lobbyView;if(!data||app.screen!=='lobby')return;const players=data.players||[];const cfg=data.config;$('lobbyCount').textContent=`${players.length} O‘YINCHI / 30 MAX`;$('lobbySettings').textContent=`${Math.floor(cfg.duration/60)} DAQ · ${cfg.lives} JON · ${cfg.rounds} RAUND`;$('lobbyConnection').textContent=app.connectionReady?'● ULANISH FAOL':'○ ULANYAPTI';$('lobbyModeLabel').textContent=MODES[cfg.mode].name+' / LOBBY';$('lobbyModeTitle').textContent=MODES[cfg.mode].name;$('lobbyModeDesc').textContent=MODES[cfg.mode].summary;const list=$('roster');list.replaceChildren();if(!players.length){const el=document.createElement('div');el.className='roster-empty';el.textContent='O‘yinchilar kutilmoqda ...';list.append(el)}for(let i=0;i<players.length;i++){const p=players[i],el=document.createElement('div');el.className='roster-member';const av=document.createElement('span');av.className='roster-avatar';av.style.background=p.color;av.textContent=p.name.slice(0,1).toUpperCase();const inf=document.createElement('div'),nm=document.createElement('strong'),tag=document.createElement('small');nm.textContent=p.name;tag.textContent=(p.id==='host'?'HOST / ':'OPERATIVE / ')+(cfg.mode==='team'||cfg.mode==='double'?TEAMS[p.team].name:'SOLO');inf.append(nm,tag);el.append(av,inf);list.append(el)}if(app.isHost)$('startBtn').disabled=players.length<(cfg.mode==='impostor'?4:2)}
 function createRoom(){if(!window.Peer){toast('PeerJS yuklanmadi. Internetni yoki brauzer bloklovchilarni tekshiring.',true);return}closePeer();app.isHost=true;app.room=randomRoom();app.config=getConfig();app.hostPlays=app.config.hostPlays;app.localName=safeName($('hostNick').value);app.localId='host';app.lobbyPlayers=new Map();if(app.hostPlays)app.lobbyPlayers.set('host',{id:'host',name:app.localName,participates:true,joined:Date.now()});setStatus('XONA YARATILMOQDA');$('createBtn').disabled=true;let peer;
@@ -287,11 +287,11 @@ function receiveFromHost(msg){if(!msg||typeof msg!=='object')return;
  if(msg.t==='welcome'){clearTimeout(app.connectionTimeout);app.connectionReady=true;app.localId=msg.id;app.config=msg.config;setStatus('ULANDI / '+app.room);$('joinBtn').disabled=false;showLobby();toast('Siz '+app.room+' xonasidasiz');return}
  if(msg.t==='reject'){clearTimeout(app.connectionTimeout);$('joinBtn').disabled=false;toast(msg.text||'Xona sizni qabul qilmadi.',true);setStatus('XONA RAD ETDI',true);return}
  if(msg.t==='lobby'){app.lobbyView=msg;if(app.screen==='game'&&app.view?.phase==='match_end'){app.view=null;app.map=null;showLobby()}if(app.screen==='lobby')renderLobby();return}
- if(msg.t==='map'){app.map=msg.map;app.config=msg.config;app.mode=msg.mode;app.discovered.clear();app.eventsSeen.clear();app.particles=[];app.lastSnapshotAt=0;showScreen('game');return}
+ if(msg.t==='map'){app.map=msg.map;app.config=msg.config;app.mode=msg.mode;app.discovered.clear();app.eventsSeen.clear();app.particles=[];app.visibilityCache=null;app.tileCache=null;app.localVisual=null;app.lastSnapshotAt=0;showScreen('game');return}
  if(msg.t==='snapshot'){if(app.screen!=='game')showScreen('game');updateView(msg);return}
  if(msg.t==='ended'){toast('Host xonani yopdi.',true);closePeer();showScreen('home');return}
 }
-function startMatch(){if(!app.isHost)return;app.quizSeen=new Set();const players=lobbyParticipants();const minimum=app.config.mode==='impostor'?4:2;if(players.length<minimum){toast(`Kamida ${minimum} o‘yinchi kerak.`,true);return}app.world=new World(app.config,players,[0,0]);sendMapToAll();app.view=null;app.discovered.clear();app.eventsSeen.clear();app.lastSnapshotAt=0;showScreen('game');setStatus('MATCH / LIVE');sendSnapshots(true);toast('ROUND 01 / MATCH BOSHLANDI')}
+function startMatch(){if(!app.isHost)return;app.quizSeen=new Set();const players=lobbyParticipants();const minimum=app.config.mode==='impostor'?4:2;if(players.length<minimum){toast(`Kamida ${minimum} o‘yinchi kerak.`,true);return}app.world=new World(app.config,players,[0,0]);sendMapToAll();app.view=null;app.discovered.clear();app.eventsSeen.clear();app.lastSnapshotAt=0;app.visibilityCache=null;app.tileCache=null;app.localVisual=null;showScreen('game');setStatus('MATCH / LIVE');sendSnapshots(true);toast('ROUND 01 / MATCH BOSHLANDI')}
 function sendMapToAll(){if(!app.world)return;const w=app.world,msg={t:'map',map:w.map,config:w.config,mode:w.mode,round:w.round};app.map=w.map;app.mode=w.mode;for(const c of app.clients.values())send(c,msg)}
 function sendSnapshots(force=false){if(!app.world)return;const w=app.world;const now=Date.now();if(!force&&now-app.lastNet<110)return;app.lastNet=now;app.view=w.snapshotFor('host');updateView(app.view);for(const [id,conn] of app.clients.entries())send(conn,w.snapshotFor(id))}
 function advanceRound(){const w=app.world;if(!w)return;if(w.round>=app.config.rounds){w.phase='match_end';sendSnapshots(true);return}const persisted=[...w.players.values()].map(p=>({id:p.id,name:p.name,participates:true,joined:p.joined,stats:{kills:p.kills,deaths:p.deaths,assists:p.assists,score:p.score,credits:clamp(p.credits+300,0,9999),pieces:0}}));const next=new World(app.config,persisted,w.matchWins,w.round+1);app.world=next;sendMapToAll();sendSnapshots(true);toast(`ROUND ${next.round} / YANGI LABIRINT`)}
@@ -299,8 +299,8 @@ function leaveGame(){if(app.isHost)for(const conn of app.clients.values())send(c
 function command(action,other={}){if(app.isHost){app.world?.command('host',{action,...other});sendSnapshots(true)}else if(app.connectionReady)send(app.conn,{t:'cmd',action,...other})}
 function updateView(v){if(!v)return;const isNewRound=app.view&&v.round!==app.view.round;
  if(!app.isHost){const old=app.view;app.remoteTween={from:new Map((old?.players||[]).map(p=>[p.id,p])),receivedAt:performance.now()};app.view=v;}
- if(isNewRound){app.discovered.clear();app.eventsSeen.clear();app.particles=[]}
- app.lastSnapshotAt=Date.now();for(const ev of v.events||[]){if(!app.eventsSeen.has(ev.id)){app.eventsSeen.add(ev.id);processEvent(ev,v)}if(app.eventsSeen.size>450)app.eventsSeen.clear()}
+ if(isNewRound){app.discovered.clear();app.eventsSeen.clear();app.particles=[];app.localVisual=null;app.visibilityCache=null;app.tileCache=null}
+ app.lastSnapshotAt=Date.now();app.viewVersion++;for(const ev of v.events||[]){if(!app.eventsSeen.has(ev.id)){app.eventsSeen.add(ev.id);processEvent(ev,v)}if(app.eventsSeen.size>450)app.eventsSeen.clear()}
  if(app.screen==='game')refreshHud(v);
 }
 function processEvent(ev,v){if(ev.kind==='death'){spawnCubes(ev.x,ev.y,ev.team);app.screenShake=Math.max(6,app.screenShake);pushFeed(`${ev.killer}  ⌖  ${ev.player}`);playTone('death')}
@@ -358,8 +358,17 @@ function setupUI(){initHero();document.querySelectorAll('[data-back="home"]').fo
  $('soundBtn').addEventListener('click',()=>{app.audio=!app.audio;$('soundText').textContent=app.audio?'ON':'OFF';if(app.audio)playTone('pickup')});
  $('chatSendBtn').addEventListener('click',sendChat);$('chatInput').addEventListener('keydown',e=>{if(e.key==='Enter')sendChat()});
  window.addEventListener('keydown',onKeyDown);window.addEventListener('keyup',onKeyUp);window.addEventListener('blur',()=>{app.keys.clear();app.controls.fire=false;app.pointerFiring=false});
- const c=$('gameCanvas');c.addEventListener('pointermove',e=>{if(e.pointerType==='mouse'){app.usingPointer=true;const r=c.getBoundingClientRect();app.controls.aim=Math.atan2(e.clientY-r.top-r.height/2,e.clientX-r.left-r.width/2)}});
- c.addEventListener('pointerdown',e=>{if(app.screen!=='game'||e.pointerType!=='mouse'||e.button!==0||isModalOpen())return;const r=c.getBoundingClientRect();app.controls.aim=Math.atan2(e.clientY-r.top-r.height/2,e.clientX-r.left-r.width/2);app.pointerFiring=true;app.controls.fire=true;app.usingPointer=true;try{c.setPointerCapture(e.pointerId)}catch{}});const releaseFire=()=>{app.pointerFiring=false;app.controls.fire=false};c.addEventListener('pointerup',releaseFire);c.addEventListener('pointercancel',releaseFire);c.addEventListener('lostpointercapture',releaseFire);window.addEventListener('pointerup',releaseFire);c.addEventListener('contextmenu',e=>e.preventDefault());
+ const c=$('gameCanvas');
+ const aimAtPointer=e=>{
+   if(app.screen!=='game'||e.pointerType!=='mouse'||isModalOpen())return;
+   const r=app.gameCanvasRect||c.getBoundingClientRect();
+   app.controls.aim=Math.atan2(e.clientY-(r.top+r.height/2),e.clientX-(r.left+r.width/2));
+   app.usingPointer=true;
+ };
+ window.addEventListener('pointermove',aimAtPointer,{passive:true});
+ window.addEventListener('resize',()=>{app.gameCanvasRect=null;app.tileCache=null;app.visibilityCache=null});
+
+ c.addEventListener('pointerdown',e=>{if(app.screen!=='game'||e.pointerType!=='mouse'||e.button!==0||isModalOpen())return;aimAtPointer(e);app.pointerFiring=true;app.controls.fire=true;app.usingPointer=true;try{c.setPointerCapture(e.pointerId)}catch{}});const releaseFire=()=>{app.pointerFiring=false;app.controls.fire=false};c.addEventListener('pointerup',releaseFire);c.addEventListener('pointercancel',releaseFire);c.addEventListener('lostpointercapture',releaseFire);window.addEventListener('pointerup',releaseFire);c.addEventListener('contextmenu',e=>e.preventDefault());
  setupMobileControls();
  const room=extractCode(new URLSearchParams(location.search).get('room'));if(room){$('joinCode').value=room;showScreen('join')}
  setStatus('TIZIM TAYYOR');app.renderStarted=true;requestAnimationFrame(loop)
@@ -376,15 +385,46 @@ function updateInput(){const k=app.keys;let dx=0,dy=0;if(k.has('w')||k.has('arro
 function setupMobileControls(){const stick=$('moveStick'),knob=$('moveKnob');const update=e=>{const r=stick.getBoundingClientRect(),ox=e.clientX-(r.left+r.width/2),oy=e.clientY-(r.top+r.height/2),l=Math.hypot(ox,oy)||1,k=Math.min(1,l/(r.width*.38));app.joystickPointer={dx:ox/l*k,dy:oy/l*k};knob.style.transform=`translate(calc(-50% + ${ox/l*35*k}px),calc(-50% + ${oy/l*35*k}px))`};stick.addEventListener('pointerdown',e=>{e.preventDefault();stick.setPointerCapture(e.pointerId);update(e)});stick.addEventListener('pointermove',e=>{if(stick.hasPointerCapture(e.pointerId))update(e)});const stop=()=>{app.joystickPointer=null;knob.style.transform='translate(-50%,-50%)'};stick.addEventListener('pointerup',stop);stick.addEventListener('pointercancel',stop);const fire=$('mobileFire');fire.addEventListener('pointerdown',e=>{e.preventDefault();fire.setPointerCapture(e.pointerId);app.mobileFiring=true});const release=()=>{app.mobileFiring=false;app.controls.fire=false};fire.addEventListener('pointerup',release);fire.addEventListener('pointercancel',release);$('mobileReload').onclick=()=>command('reload');$('mobileInteract').onclick=()=>command('interact');$('mobileSpecial').onclick=()=>command('special');$('mobileMeeting').onclick=()=>command('meeting')}
 
 /* ————— CANVAS RENDERING / FOG OF WAR / CUBE-DEATH EFFECTS ————— */
-function resizeCanvas(c){const dpr=Math.min(1.5,devicePixelRatio||1),r=c.getBoundingClientRect(),w=Math.max(1,Math.round(r.width*dpr)),h=Math.max(1,Math.round(r.height*dpr));if(c.width!==w||c.height!==h){c.width=w;c.height=h}const ctx=c.getContext('2d');ctx.setTransform(dpr,0,0,dpr,0,0);return{ctx,w:r.width,h:r.height}}
-function hash(x,y,seed=0){let n=(Math.imul(x+13,374761393)+Math.imul(y+17,668265263)+seed)|0;n=Math.imul(n^(n>>>13),1274126177);return(n^(n>>>16))>>>0}
-function visibleSet(map,me,radius,lamps=[]){const set=new Set(),n=map.length,max=Math.min(12,radius+1),cx=Math.floor(me.x),cy=Math.floor(me.y);
- for(let y=Math.max(0,cy-Math.ceil(max));y<=Math.min(n-1,cy+Math.ceil(max));y++)for(let x=Math.max(0,cx-Math.ceil(max));x<=Math.min(n-1,cx+Math.ceil(max));x++){
- const p={x:x+.5,y:y+.5},d=distance(me,p);if(d>max)continue;
- const scanner=me.scannerEndsAt>Date.now(),flash=d<7.3&&Math.cos(Math.atan2(p.y-me.y,p.x-me.x)-me.a)>.63,lit=lamps.some(l=>distance(l,p)<l.r*1.2&&distance(l,me)<11&&lineClear(map,l.x,l.y,p.x,p.y));
- if((d<1.45||scanner||flash||lit)&&lineClear(map,me.x,me.y,p.x,p.y))set.add(y*n+x)
- }return set;
+function resizeCanvas(c){
+ const now=performance.now();
+ let r=c._renderRect;
+ if(!r||now-(c._rectChecked||0)>420){r=c.getBoundingClientRect();c._renderRect={left:r.left,top:r.top,width:r.width,height:r.height};c._rectChecked=now}
+ else r=c._renderRect;
+ if(c.id==='gameCanvas')app.gameCanvasRect=r;
+ const dpr=Math.min(1.25,devicePixelRatio||1)*(c.id==='gameCanvas'?app.renderScale:1);
+ const w=Math.max(1,Math.round(r.width*dpr)),h=Math.max(1,Math.round(r.height*dpr));
+ if(c.width!==w||c.height!==h){c.width=w;c.height=h}
+ const ctx=c.getContext('2d',{alpha:false});ctx.setTransform(dpr,0,0,dpr,0,0);
+ return{ctx,w:r.width,h:r.height};
 }
+function hash(x,y,seed=0){let n=(Math.imul(x+13,374761393)+Math.imul(y+17,668265263)+seed)|0;n=Math.imul(n^(n>>>13),1274126177);return(n^(n>>>16))>>>0}
+function visibleSet(map,me,radius,lamps=[]){
+ const now=performance.now(),cached=app.visibilityCache;
+ const scanner=me.scannerEndsAt>Date.now(),dir=Math.round(me.a*10)/10;
+ if(cached&&cached.map===map&&cached.scanner===scanner&&cached.radius===radius&&
+    Math.hypot(cached.x-me.x,cached.y-me.y)<.19&&Math.abs(Math.atan2(Math.sin(cached.a-dir),Math.cos(cached.a-dir)))<.11&&now-cached.at<125)return cached.set;
+ const set=new Set(),n=map.length,max=Math.min(12,radius+1),cx=Math.floor(me.x),cy=Math.floor(me.y);
+ const nearLamps=lamps.filter(l=>(l.x-me.x)**2+(l.y-me.y)**2<121&&lineClear(map,me.x,me.y,l.x,l.y));
+ const rmax=Math.ceil(max),max2=max*max;
+ for(let y=Math.max(0,cy-rmax);y<=Math.min(n-1,cy+rmax);y++)for(let x=Math.max(0,cx-rmax);x<=Math.min(n-1,cx+rmax);x++){
+  const px=x+.5,py=y+.5,dx=px-me.x,dy=py-me.y,d2=dx*dx+dy*dy;if(d2>max2)continue;
+  const flash=d2<53.3&&Math.cos(Math.atan2(dy,dx)-me.a)>.63;
+  const lit=nearLamps.some(l=>(l.x-px)**2+(l.y-py)**2<(l.r*1.2)**2&&lineClear(map,l.x,l.y,px,py));
+  if((d2<2.11||scanner||flash||lit)&&lineClear(map,me.x,me.y,px,py))set.add(y*n+x);
+ }
+ app.visibilityCache={set,map,scanner,radius,x:me.x,y:me.y,a:dir,at:now};return set;
+}
+function cachedTile(ctx,grid,x,y,px,py,sz){
+ const signature=Math.round(sz*10)/10;
+ if(!app.tileCache||app.tileCache.map!==grid||app.tileCache.sz!==signature)app.tileCache={map:grid,sz:signature,tiles:new Map()};
+ const k=y*grid.length+x;let cv=app.tileCache.tiles.get(k);
+ if(!cv){cv=document.createElement('canvas');cv.width=Math.ceil(sz)+2;cv.height=Math.ceil(sz)+2;
+  const g=cv.getContext('2d');drawTile(g,x,y,0,0,sz,grid[y][x],true,grid.length);
+  app.tileCache.tiles.set(k,cv);
+ }
+ ctx.drawImage(cv,px,py);
+}
+
 function drawTile(ctx,x,y,px,py,s,wall,seen,seed){if(!seen)return;const h=hash(x,y,seed),v=h%7;
  if(wall){ctx.fillStyle='#080f12';ctx.fillRect(px+s*.11,py+s*.14,s,s);
  ctx.fillStyle=['#243832','#233a34','#2a413a','#243c36','#263f37','#28443d','#233832'][v];ctx.fillRect(px,py,s*.98,s*.94);
@@ -434,21 +474,56 @@ function drawLamppost(ctx,light,toScreen,sz){const p=toScreen(light),radius=sz*.
 let lightLayer=null;
 function drawDarkLighting(ctx,w,h,me,toScreen,sz,lamps,grid,isSpectator,v){
  if(isSpectator)return;
- if(!lightLayer)lightLayer=document.createElement('canvas');if(lightLayer.width!==Math.ceil(w)||lightLayer.height!==Math.ceil(h)){lightLayer.width=Math.ceil(w);lightLayer.height=Math.ceil(h)}
- const lx=lightLayer.getContext('2d');lx.globalCompositeOperation='source-over';lx.clearRect(0,0,w,h);lx.fillStyle='rgba(0,5,8,.93)';lx.fillRect(0,0,w,h);lx.globalCompositeOperation='destination-out';
- const cut=(x,y,r,strength=1)=>{const g=lx.createRadialGradient(x,y,sz*.1,x,y,r);g.addColorStop(0,`rgba(0,0,0,${strength})`);g.addColorStop(.55,`rgba(0,0,0,${strength*.87})`);g.addColorStop(1,'rgba(0,0,0,0)');lx.fillStyle=g;lx.beginPath();lx.arc(x,y,r,0,Math.PI*2);lx.fill()};
- const center=toScreen(me);cut(center.x,center.y,sz*1.55,.94);
- const flicker=.97+Math.sin(performance.now()/800)*.025;
- lx.save();lx.beginPath();lx.moveTo(center.x,center.y);lx.arc(center.x,center.y,sz*7.2,me.a-.9,me.a+.9);lx.closePath();lx.clip();cut(center.x,center.y,sz*7.4,.95*flicker);lx.restore();
- for(const l of lamps){if(distance(l,me)>11||!lineClear(grid,me.x,me.y,l.x,l.y))continue;const p=toScreen(l);cut(p.x,p.y,sz*l.r*.95,.88)}
- if(v.me?.scannerEndsAt>Date.now())cut(center.x,center.y,sz*9.0,.6);
- lx.globalCompositeOperation='source-over';ctx.drawImage(lightLayer,0,0,w,h)
+ const scale=Math.max(.33,Math.min(.53,600/Math.max(w,h)));
+ const lw=Math.max(1,Math.ceil(w*scale)),lh=Math.max(1,Math.ceil(h*scale));
+ if(!lightLayer)lightLayer=document.createElement('canvas');
+ if(lightLayer.width!==lw||lightLayer.height!==lh){lightLayer.width=lw;lightLayer.height=lh}
+ const lx=lightLayer.getContext('2d',{alpha:true});
+ lx.setTransform(scale,0,0,scale,0,0);
+ lx.globalCompositeOperation='source-over';lx.clearRect(0,0,w,h);
+ lx.fillStyle='rgba(0,5,8,.92)';lx.fillRect(0,0,w,h);
+ lx.globalCompositeOperation='destination-out';
+ const cut=(x,y,r,strength=1)=>{const g=lx.createRadialGradient(x,y,sz*.1,x,y,r);
+  g.addColorStop(0,`rgba(0,0,0,${strength})`);
+  g.addColorStop(.55,`rgba(0,0,0,${strength*.87})`);
+  g.addColorStop(1,'rgba(0,0,0,0)');lx.fillStyle=g;
+  lx.beginPath();lx.arc(x,y,r,0,Math.PI*2);lx.fill()};
+ const center=toScreen(me);cut(center.x,center.y,sz*1.48,.94);
+ const flicker=.975+Math.sin(performance.now()/850)*.018;
+ lx.save();lx.beginPath();lx.moveTo(center.x,center.y);
+ lx.arc(center.x,center.y,sz*7.2,me.a-.9,me.a+.9);lx.closePath();lx.clip();
+ cut(center.x,center.y,sz*7.4,.95*flicker);lx.restore();
+ for(const l of lamps){if((l.x-me.x)**2+(l.y-me.y)**2>121||!lineClear(grid,me.x,me.y,l.x,l.y))continue;
+  const p=toScreen(l);cut(p.x,p.y,sz*l.r*.95,.88)}
+ if(v.me?.scannerEndsAt>Date.now())cut(center.x,center.y,sz*9,.6);
+ lx.globalCompositeOperation='source-over';
+ ctx.save();ctx.imageSmoothingEnabled=true;ctx.drawImage(lightLayer,0,0,w,h);ctx.restore();
 }
-function renderGame(dt){const v=app.view,grid=app.map;if(app.screen!=='game'||!v||!grid)return;const {ctx,w,h}=resizeCanvas($('gameCanvas'));const me=v.me||{x:grid.length/2,y:grid.length/2,a:0,alive:false};const sz=clamp(Math.min(w/15,h/12),31,57),cameraX=me.x-w/(2*sz),cameraY=me.y-h/(2*sz),toScreen=p=>({x:(p.x-cameraX)*sz,y:(p.y-cameraY)*sz});
+function localDisplayPlayer(v,grid,dt){
+ const latest=v.me;if(!latest)return{x:grid.length/2,y:grid.length/2,a:0,alive:false};
+ if(app.isHost){const p=app.world?.getPlayer('host');return p?{...latest,x:p.x,y:p.y,a:app.controls.aim,alive:p.alive}:latest}
+ if(!latest.alive){app.localVisual=null;return latest}
+ let loc=app.localVisual;
+ if(!loc||loc.round!==v.round||Math.hypot(loc.x-latest.x,loc.y-latest.y)>1.8){loc={x:latest.x,y:latest.y,round:v.round,version:app.viewVersion};app.localVisual=loc}
+ const dx=app.controls.dx,dy=app.controls.dy,mag=Math.hypot(dx,dy),speed=(app.controls.run&&latest.stamina>3?4.8:3.25)*Math.min(dt,.045);
+ const blocked=(x,y)=>!validMove(grid,x,y,.26)||(v.gates||[]).some(g=>g.locked&&Math.abs(x-g.x)<.69&&Math.abs(y-g.y)<.69);
+ if(mag>.001&&v.phase==='playing'&&!v.paused&&!isModalOpen()){
+  const mx=dx/mag*speed,my=dy/mag*speed;
+  if(!blocked(loc.x+mx,loc.y))loc.x+=mx;
+  if(!blocked(loc.x,loc.y+my))loc.y+=my;
+ }
+ if(loc.version!==app.viewVersion){loc.version=app.viewVersion;
+  const error=Math.hypot(loc.x-latest.x,loc.y-latest.y);
+  if(error>1.2){loc.x=latest.x;loc.y=latest.y}
+  else{loc.x+=(latest.x-loc.x)*.2;loc.y+=(latest.y-loc.y)*.2}
+ }
+ return{...latest,x:loc.x,y:loc.y,a:app.controls.aim};
+}
+function renderGame(dt){const v=app.view,grid=app.map;if(app.screen!=='game'||!v||!grid)return;const {ctx,w,h}=resizeCanvas($('gameCanvas'));const me=localDisplayPlayer(v,grid,dt);const sz=clamp(Math.min(w/15,h/12),31,57),cameraX=me.x-w/(2*sz),cameraY=me.y-h/(2*sz),toScreen=p=>({x:(p.x-cameraX)*sz,y:(p.y-cameraY)*sz});
  ctx.clearRect(0,0,w,h);ctx.fillStyle='#0b130f';ctx.fillRect(0,0,w,h);ctx.save();const shake=app.screenShake>0?app.screenShake:0;if(shake>0){ctx.translate(rand(-shake,shake),rand(-shake,shake));app.screenShake*=.78;if(app.screenShake<.4)app.screenShake=0}
  const isSpectator=!v.me,vis=isSpectator?null:visibleSet(grid,me,v.visibility||7,v.lamps||[]);if(vis)for(const key of vis)app.discovered.add(key);
  const x0=Math.max(0,Math.floor(cameraX)-1),x1=Math.min(grid.length-1,Math.ceil(cameraX+w/sz)+1),y0=Math.max(0,Math.floor(cameraY)-1),y1=Math.min(grid.length-1,Math.ceil(cameraY+h/sz)+1);
- for(let y=y0;y<=y1;y++)for(let x=x0;x<=x1;x++){const idx=y*grid.length+x,visible=isSpectator||vis?.has(idx),old=isSpectator||app.discovered.has(idx);if(!old)continue;const px=(x-cameraX)*sz,py=(y-cameraY)*sz;drawTile(ctx,x,y,px,py,sz,grid[y][x],old,grid.length);if(!visible){ctx.fillStyle='#070d0bcb';ctx.fillRect(px,py,sz+1,sz+1)}}
+ for(let y=y0;y<=y1;y++)for(let x=x0;x<=x1;x++){const idx=y*grid.length+x,visible=isSpectator||vis?.has(idx),old=isSpectator||app.discovered.has(idx);if(!old)continue;const px=(x-cameraX)*sz,py=(y-cameraY)*sz;cachedTile(ctx,grid,x,y,px,py,sz);if(!visible){ctx.fillStyle='#070d0bcb';ctx.fillRect(px,py,sz+1,sz+1)}}
  const shouldDraw=obj=>isSpectator||vis?.has(Math.floor(obj.y)*grid.length+Math.floor(obj.x));
  if(shouldDraw(v.bomb.site)&&(v.mode==='team'||v.mode==='double')){const b=toScreen(v.bomb.site);ctx.save();ctx.strokeStyle=v.bomb.planted?'#f0806e':'#d8ae66';ctx.lineWidth=3;ctx.strokeRect(b.x-sz*.5,b.y-sz*.5,sz,sz);ctx.fillStyle=v.bomb.planted?'#ed867450':'#e4b75f33';ctx.fillRect(b.x-sz*.5,b.y-sz*.5,sz,sz);ctx.fillStyle='#f6e4b8';ctx.font=`700 ${Math.max(10,sz*.27)}px monospace`;ctx.textAlign='center';ctx.fillText(v.bomb.planted?'!':'B',b.x,b.y+sz*.1);ctx.restore()}
  if(shouldDraw(v.exit)&&v.mode==='escape'){const e=toScreen(v.exit);ctx.save();ctx.translate(e.x,e.y);ctx.rotate(performance.now()/1700);ctx.strokeStyle='#d5c477';ctx.lineWidth=4;ctx.strokeRect(-sz*.33,-sz*.33,sz*.66,sz*.66);ctx.restore();ctx.fillStyle='#fff3b8';ctx.font=`800 ${sz*.32}px monospace`;ctx.textAlign='center';ctx.fillText('EXIT',e.x,e.y+sz*.09)}
@@ -459,25 +534,35 @@ function renderGame(dt){const v=app.view,grid=app.map;if(app.screen!=='game'||!v
  for(const s of v.smokes||[]){const q=toScreen(s);const rad=sz*1.5,cloud=ctx.createRadialGradient(q.x,q.y,sz*.18,q.x,q.y,rad);cloud.addColorStop(0,'#96b8aab8');cloud.addColorStop(.7,'#718c7e92');cloud.addColorStop(1,'#506b5a00');ctx.fillStyle=cloud;ctx.beginPath();ctx.arc(q.x,q.y,rad,0,Math.PI*2);ctx.fill()}
  for(const b of v.bullets){const p=toScreen(b);ctx.strokeStyle='#fbe2aa';ctx.shadowBlur=8;ctx.shadowColor='#ffe9a3';ctx.lineWidth=2.7;ctx.beginPath();ctx.moveTo(p.x-b.dx*sz*.26,p.y-b.dy*sz*.26);ctx.lineTo(p.x+b.dx*sz*.12,p.y+b.dy*sz*.12);ctx.stroke();ctx.shadowBlur=0}
  for(const m of v.monsters||[])if(shouldDraw(m))drawMonster(ctx,m,toScreen,sz);
- for(const p of v.players.filter(p=>p.alive)){let ip=p;if(!app.isHost&&p.id!==app.localId&&app.remoteTween){const prev=app.remoteTween.from.get(p.id);if(prev){const k=clamp((performance.now()-app.remoteTween.receivedAt)/115,0,1);ip={...p,x:prev.x+(p.x-prev.x)*k,y:prev.y+(p.y-prev.y)*k}}}drawActor(ctx,ip,toScreen,sz,p.id===app.localId)};
+ for(const p of v.players.filter(p=>p.alive)){let ip=p;if(!app.isHost&&p.id!==app.localId&&app.remoteTween){const prev=app.remoteTween.from.get(p.id);if(prev){const k=clamp((performance.now()-app.remoteTween.receivedAt)/115,0,1);ip={...p,x:prev.x+(p.x-prev.x)*k,y:prev.y+(p.y-prev.y)*k}}}drawActor(ctx,p.id===app.localId?me:ip,toScreen,sz,p.id===app.localId)};
  for(const e of v.events||[])if((e.kind==='impact'||e.kind==='hit'||e.kind==='shot')&&Date.now()-e.time<220&&e.x!=null){const q=toScreen(e),age=clamp((Date.now()-e.time)/220,0,1);ctx.strokeStyle=e.kind==='hit'?`rgba(250,112,98,${1-age})`:`rgba(244,207,127,${1-age})`;ctx.lineWidth=2;ctx.beginPath();ctx.arc(q.x,q.y,(age*.45+.08)*sz,0,Math.PI*2);ctx.stroke()}
  drawParticles(ctx,toScreen,sz,dt);
  drawDarkLighting(ctx,w,h,me,toScreen,sz,v.lamps||[],grid,isSpectator,v);
  if(!isSpectator&&!me.alive){ctx.fillStyle='#110e0e8c';ctx.fillRect(0,0,w,h);ctx.textAlign='center';ctx.font=`800 ${Math.min(48,w/12)}px 'Barlow Condensed',Impact,sans-serif`;ctx.fillStyle='#f5b2a3';ctx.fillText(me.lives>0?'RESPAWN KUTILMOQDA':'ELIMINATED / SPECTATOR',w/2,h/2);ctx.font='600 11px monospace';ctx.fillStyle='#d8c5be';ctx.fillText(me.lives>0?'Qolgan hayotlar: '+me.lives:'Qolgan o‘yinchilarni kuzating',w/2,h/2+27)}
  if(v.paused){ctx.fillStyle='#111914d0';ctx.fillRect(0,0,w,h);ctx.fillStyle='#e0bd72';ctx.font=`900 53px 'Barlow Condensed',sans-serif`;ctx.textAlign='center';ctx.fillText('PAUSE / HOST',w/2,h/2)}
- ctx.restore();if(!app.renderFrames||app.renderFrames%5===0)renderMiniMap(v,grid,vis);renderNearbyHint(v);
+ ctx.restore();if(!app.renderFrames||app.renderFrames%12===0)renderMiniMap(v,grid,vis);if(app.renderFrames%8===0)renderNearbyHint(v);
 }
 function renderMiniMap(v,grid,vis){const {ctx,w,h}=resizeCanvas($('miniMap'));const n=grid.length,scale=Math.min(w/n,h/n),ox=(w-n*scale)/2,oy=(h-n*scale)/2;ctx.fillStyle='#101813';ctx.fillRect(0,0,w,h);for(let y=0;y<n;y++)for(let x=0;x<n;x++){const key=y*n+x;if(!app.discovered.has(key)&&v.me)continue;ctx.fillStyle=grid[y][x]?'#607562':'#2f4235';ctx.fillRect(ox+x*scale,oy+y*scale,Math.ceil(scale),Math.ceil(scale));if(vis?.has(key)){ctx.fillStyle='#8eb39429';ctx.fillRect(ox+x*scale,oy+y*scale,Math.ceil(scale),Math.ceil(scale))}}
  for(const p of v.players.filter(p=>p.alive)){if(v.me&&p.id!==v.me.id&&!(v.me.scannerEndsAt>Date.now())&&!(vis?.has(Math.floor(p.y)*n+Math.floor(p.x))))continue;ctx.fillStyle=p.color;ctx.beginPath();ctx.arc(ox+p.x*scale,oy+p.y*scale,Math.max(2,scale*.65),0,Math.PI*2);ctx.fill()}
  for(const signal of v.radarPings||[]){const rx=ox+signal.x*scale,ry=oy+signal.y*scale;ctx.strokeStyle='#f28f78';ctx.lineWidth=1.6;ctx.beginPath();ctx.arc(rx,ry,Math.max(4,scale*2.3),0,Math.PI*2);ctx.stroke()}
  if(v.mode==='escape'&&v.me&&app.discovered.has(Math.floor(v.exit.y)*n+Math.floor(v.exit.x))){ctx.fillStyle='#f9d37d';ctx.fillRect(ox+v.exit.x*scale-2,oy+v.exit.y*scale-2,4,4)}}
 function renderNearbyHint(v){const el=$('gamePrompt');const me=v.me;if(!me||!me.alive||v.phase!=='playing'){el.classList.add('hidden');return}const closest=(v.drops||[]).filter(d=>distance(d,me)<1.4)[0],term=(v.terminals||[]).find(t=>!t.solved&&distance(t,me)<1.7),site=(v.mode==='team'||v.mode==='double')&&distance(v.bomb.site,me)<2,exit=v.mode==='escape'&&distance(v.exit,me)<1.7;let msg='';if(closest)msg=`[E] ${closest.kind==='corpse'?'RAQIB INVENTARINI OLISH':closest.kind==='chest'?'MUKOFOT SANDIG‘INI OCHISH':closest.kind.toUpperCase()+' OLISH'}`;else if(term)msg='[E] TERMINAL / JUMBOQNI OCHISH';else if((v.gates||[]).some(g=>g.locked&&distance(g,me)<1.7))msg='[E] QULFLANGAN ESHIK / KALIT KERAK';else if(site)msg=`[E] ${v.bomb.planted?'DATA CORE ZARARSIZLANTIRISH':'DATA CORE FAOLLASHTIRISH'}`;else if(exit)msg=`[E] PORTALDAN CHIQISH · ${me.pieces||0}/3 KOD`;else if(v.mode==='impostor'&&me.role==='traitor')msg='[Q] YASHIRIN HUJUM / SABOTAJ';if(msg){el.classList.remove('hidden');el.textContent=msg}else el.classList.add('hidden')}
-let previousFrame=performance.now();function loop(ts){app.renderFrames=(app.renderFrames||0)+1;if(!app.fpsStart)app.fpsStart=ts;if(ts-app.fpsStart>=1000){const fps=Math.round((app.renderFrames-(app.fpsLastCount||0))*1000/(ts-app.fpsStart));const counter=$('fpsCounter');if(counter)counter.textContent=fps+' FPS';app.fpsLastCount=app.renderFrames;app.fpsStart=ts;}const dt=Math.min(.06,Math.max(.001,(ts-previousFrame)/1000));previousFrame=ts;
+let previousFrame=performance.now();function loop(ts){app.renderFrames=(app.renderFrames||0)+1;if(!app.fpsStart)app.fpsStart=ts;if(ts-app.fpsStart>=1000){
+ const fps=Math.round((app.renderFrames-(app.fpsLastCount||0))*1000/(ts-app.fpsStart));
+ const counter=$('fpsCounter');if(counter)counter.textContent=fps+' FPS';
+ app.fpsLastCount=app.renderFrames;app.fpsStart=ts;
+ if(app.screen==='game'&&fps>5){
+  app.lowFpsStreak=fps<46?app.lowFpsStreak+1:0;
+  app.highFpsStreak=fps>57?app.highFpsStreak+1:0;
+  if(app.lowFpsStreak>=2&&app.renderScale>.65){app.renderScale=Math.max(.65,app.renderScale-.15);app.lowFpsStreak=0}
+  if(app.highFpsStreak>=6&&app.renderScale<1){app.renderScale=Math.min(1,app.renderScale+.1);app.highFpsStreak=0}
+ }
+}const dt=Math.min(.06,Math.max(.001,(ts-previousFrame)/1000));previousFrame=ts;
  if(app.screen==='game'){
   if(app.world&&app.isHost){updateInput();app.world.step(dt);if(app.world.phase==='round_end'&&Date.now()-app.world.roundEndAt>8500)advanceRound();sendSnapshots()}
   else if(app.conn){updateInput()}
   renderGame(dt);
-  if(app.view){$('hudTime').textContent=fmtTime(app.view.paused||app.view.phase==='meeting'?app.view.remaining:(app.view.endsAt-Date.now())/1000);if(app.meetingOpen&&app.view.meeting)$('meetingTime').textContent=fmtTime((app.view.meeting.endsAt-Date.now())/1000)}
+  if(app.view&&app.renderFrames%6===0){$('hudTime').textContent=fmtTime(app.view.paused||app.view.phase==='meeting'?app.view.remaining:(app.view.endsAt-Date.now())/1000);if(app.meetingOpen&&app.view.meeting)$('meetingTime').textContent=fmtTime((app.view.meeting.endsAt-Date.now())/1000)}
  }
  requestAnimationFrame(loop)
 }
