@@ -120,7 +120,9 @@ export class Renderer {
       Math.min(
         devicePixelRatio || 1,
         this.settings.quality === "high" ? 1.5 : 1,
-      ) * (this.settings.quality === "low" ? 0.8 : 1);
+      ) *
+      (this.settings.quality === "low" ? 0.8 : 1) *
+      (this.autoScale || 1);
     if (
       this.canvas.width !== Math.round(r.width * dpr) ||
       this.canvas.height !== Math.round(r.height * dpr)
@@ -679,10 +681,16 @@ export class Renderer {
     const scale = this.settings.quality === "low" ? 0.25 : 0.4,
       w = this.width,
       h = this.height;
-    this.light.width = Math.ceil(w * scale);
-    this.light.height = Math.ceil(h * scale);
+    const lw = Math.ceil(w * scale),
+      lh = Math.ceil(h * scale);
+    if (this.light.width !== lw || this.light.height !== lh) {
+      this.light.width = lw;
+      this.light.height = lh;
+    }
     const c = this.light.getContext("2d");
     c.setTransform(scale, 0, 0, scale, 0, 0);
+    c.globalCompositeOperation = "source-over";
+    c.clearRect(0, 0, w, h);
     c.fillStyle = "#020a11b8";
     c.fillRect(0, 0, w, h);
     c.globalCompositeOperation = "destination-out";

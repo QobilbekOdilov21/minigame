@@ -269,3 +269,24 @@ test("15 monsters include six types and respect collisions", () => {
   for (let i = 0; i < 300; i++) w.step(1 / 30);
   for (const m of w.monsters) assert.ok(validMove(w.map, m.x, m.y, 0.18));
 });
+
+test("training first E always opens its terminal despite random loot placement", () => {
+  for (let seed = 1; seed <= 80; seed++) {
+    const w = new World(
+      { ...cfg(), monsters: "few" },
+      people(1),
+      [0, 0],
+      1,
+      seed,
+    );
+    w.preparePractice("p0");
+    const p = w.getPlayer("p0");
+    w.interact(p);
+    assert.equal(w.events.at(-1).kind, "puzzle_open");
+    assert.equal(w.events.at(-1).terminal, "training-terminal");
+    assert.equal(
+      w.drops.some((d) => Math.hypot(d.x - p.x, d.y - p.y) < 1.25),
+      false,
+    );
+  }
+});

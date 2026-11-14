@@ -2,6 +2,10 @@
 
 SysOne Academy uchun ishlaydigan **izometrik 2.5D tactical shooter**. X/Y o‘yin fizikasi, 2:1 izometrik pol, baland devorlar, oyoq nuqtasi bo‘yicha depth sorting va devor oldida cutaway. Grafik manba — foydalanuvchi bergan 19 ta original atlas va ulardan ishlab chiqilgan animatsiyalar.
 
+**Jonli o‘yin:** https://maze-clash-shadow-protocol.onrender.com/
+
+**Pull Request:** https://github.com/QobilbekOdilov21/minigame/pull/1
+
 ## Ishga tushirish
 
 Node.js 22 yoki yangiroq:

@@ -25,7 +25,8 @@ const settings = {
   zoom: 1,
   ...JSON.parse(localStorage.getItem("maze-settings") || "{}"),
 };
-let assets,
+let assetPromise,
+  assets,
   renderer,
   view,
   map,
@@ -93,11 +94,17 @@ $("dialog").addEventListener("cancel", (e) => {
   closeModal();
 });
 async function readyAssets() {
-  if (assets) return;
-  if (!assets) {
-    assets = await new Assets().load();
-    renderer = new Renderer($("game"), assets, settings);
-  }
+  assetPromise ||= new Assets()
+    .load()
+    .then((loaded) => {
+      assets = loaded;
+      renderer = new Renderer($("game"), assets, settings);
+    })
+    .catch((error) => {
+      assetPromise = null;
+      throw error;
+    });
+  return assetPromise;
 }
 const nickname = () => {
   const n = $("nickname").value.trim().slice(0, 18) || "Operativ";
@@ -921,6 +928,19 @@ function loop(ts) {
   }
   if (ts - sampleAt > 1000) {
     renderer.metrics.fps = Math.round((sampleFrames * 1000) / (ts - sampleAt));
+    if (!document.hidden) {
+      const fps = renderer.metrics.fps;
+      renderer.slowSamples = fps < 46 ? (renderer.slowSamples || 0) + 1 : 0;
+      renderer.fastSamples = fps > 57 ? (renderer.fastSamples || 0) + 1 : 0;
+      if (renderer.slowSamples >= 2) {
+        renderer.autoScale = Math.max(0.65, (renderer.autoScale || 1) - 0.1);
+        renderer.slowSamples = 0;
+      }
+      if (renderer.fastSamples >= 6) {
+        renderer.autoScale = Math.min(1, (renderer.autoScale || 1) + 0.1);
+        renderer.fastSamples = 0;
+      }
+    }
     $("perf").textContent = renderer.metrics.fps + " FPS";
     sampleFrames = 0;
     sampleAt = ts;

@@ -18,7 +18,7 @@ sim = sim.replace(
 sim = sim.replace(/module\.exports\s*=\s*\{[\s\S]*?\};/, "");
 const worker = `\nlet w,p,lastSeq=0,sendCount=0;const config={mode:'escape',duration:900,lives:5,rounds:1,mapSize:'small',monsters:'few',ammo:'limited',puzzles:true,practice:true};
 onmessage=e=>{const m=e.data;if(m.t==='create'){p={id:'local',name:String(m.name||'Operativ'),participates:true,joined:Date.now()};postMessage({t:'welcome',id:p.id,host:p.id,room:'LOCAL'});postMessage({t:'lobby',room:'LOCAL',host:p.id,config,players:[p]});}
-if(m.t==='start'){w=new World(config,[p],[0,0],1,145);const actor=w.getPlayer('local');Object.assign(actor,w.near({x:6.5,y:6.5}),{credits:1800,weapon:'rifle',inventory:{pistol:{mag:12,reserve:36},rifle:{mag:30,reserve:90}}});w.gates=[];w.terminals=[{id:'training-terminal',...w.near({x:actor.x+1,y:actor.y+1}),quiz:w.nextQuiz(),solved:false},...w.terminals.slice(0,4)];w.drops.unshift({id:uid(),...w.near({x:actor.x-1,y:actor.y+1}),kind:'chest',reward:'ammo'});w.lamps.push({x:actor.x,y:actor.y,r:5,color:'amber'});if(w.monsters.length)Object.assign(w.monsters[0],w.near({x:actor.x+4,y:actor.y}));postMessage({t:'map',map:w.map,config,room:'LOCAL'});postMessage(w.snapshotFor('local'));}
+if(m.t==='start'){w=new World(config,[p],[0,0],1,145);w.preparePractice('local');postMessage({t:'map',map:w.map,config,room:'LOCAL'});postMessage(w.snapshotFor('local'));}
 if(m.t==='input'&&w)w.setInput('local',m.input);
 if(m.t==='command'&&w)w.command('local',m);
 if(m.t==='pause'&&w){if(w.paused)w.endsAt+=Date.now()-w.pauseStarted;else w.pauseStarted=Date.now();w.paused=!w.paused;}

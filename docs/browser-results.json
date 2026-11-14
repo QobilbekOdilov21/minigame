@@ -16,8 +16,8 @@
       1000
     ],
     "fps": 60,
-    "meanRenderMs": 3.93,
-    "p95RenderMs": 7.9,
+    "meanRenderMs": 2.92,
+    "p95RenderMs": 5.7,
     "renderer": "Chromium software headless; no hardware certification"
   }
 }

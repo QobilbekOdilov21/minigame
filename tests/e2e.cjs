@@ -24,6 +24,7 @@ const fs = require("node:fs"),
       viewport: { width: 1440, height: 1000 },
     });
     const page = await context.newPage();
+    page.setDefaultTimeout(60000);
     page.on("pageerror", (e) => report.errors.push(e.message));
     page.on("console", (m) => {
       if (m.type() === "error") report.errors.push(m.text());
@@ -33,6 +34,10 @@ const fs = require("node:fs"),
     await page.getByRole("button", { name: /MASHQNI BOSHLASH/ }).click();
     await page.waitForFunction(() => window.mazeDebug?.snapshot?.me);
     note("offline worker starts real gameplay with 324 asset regions");
+    await page
+      .locator("#interaction")
+      .filter({ hasText: /IT JUMBOG/ })
+      .waitFor({ state: "visible" });
     await page.keyboard.press("e");
     await page.getByRole("dialog").waitFor({ state: "visible" });
     assert.ok(await page.locator("#question").textContent());

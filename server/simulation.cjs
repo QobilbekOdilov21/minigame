@@ -681,7 +681,8 @@ class World {
         this.fire(p, now);
       // Health is never regenerated automatically: the medkit economy matters.
     }
-    if (now > this.buyEndsAt) this.moveMonsters(dt, now);
+    if (now > this.buyEndsAt && now > (this.monsterWakeAt || 0))
+      this.moveMonsters(dt, now);
     for (let i = this.bullets.length - 1; i >= 0; i--) {
       const b = this.bullets[i];
       let removed = false,
@@ -1520,6 +1521,47 @@ class World {
       terminal: t.id,
       quiz: t.quiz,
       question: { q: q.q, a: q.a },
+    });
+  }
+  preparePractice(id) {
+    const p = this.getPlayer(id);
+    Object.assign(p, {
+      x: 6.5,
+      y: 6.5,
+      credits: 1800,
+      weapon: "rifle",
+      inventory: {
+        pistol: { mag: 12, reserve: 36 },
+        rifle: { mag: 30, reserve: 90 },
+      },
+    });
+    this.gates = [];
+    this.props = this.props.filter((o) => distance(o, p) > 3);
+    // Random loot must never steal the first E interaction from the tutorial terminal.
+    this.drops = this.drops.filter((d) => distance(d, p) > 2);
+    this.terminals = [
+      {
+        id: "training-terminal",
+        x: 7.5,
+        y: 7.5,
+        quiz: this.nextQuiz(),
+        solved: false,
+      },
+      ...this.terminals.slice(0, 4).filter((t) => distance(t, p) > 3),
+    ];
+    this.drops.unshift({
+      id: uid(),
+      x: 5.5,
+      y: 7.5,
+      kind: "chest",
+      reward: "ammo",
+    });
+    this.lamps.push({ x: p.x, y: p.y, r: 5, color: "amber" });
+    this.monsterWakeAt = Date.now() + 10000;
+    const far = this.cells.filter((c) => distance(c, p) > 9);
+    this.monsters.forEach((m, i) => {
+      if (i === 0) Object.assign(m, { x: 10.5, y: 6.5 });
+      else if (distance(m, p) < 8) Object.assign(m, far[i % far.length]);
     });
   }
   decorate() {

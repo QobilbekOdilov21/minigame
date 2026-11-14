@@ -907,7 +907,8 @@ class World {
         this.fire(p, now);
       // Health is never regenerated automatically: the medkit economy matters.
     }
-    if (now > this.buyEndsAt) this.moveMonsters(dt, now);
+    if (now > this.buyEndsAt && now > (this.monsterWakeAt || 0))
+      this.moveMonsters(dt, now);
     for (let i = this.bullets.length - 1; i >= 0; i--) {
       const b = this.bullets[i];
       let removed = false,
@@ -1748,6 +1749,47 @@ class World {
       question: { q: q.q, a: q.a },
     });
   }
+  preparePractice(id) {
+    const p = this.getPlayer(id);
+    Object.assign(p, {
+      x: 6.5,
+      y: 6.5,
+      credits: 1800,
+      weapon: "rifle",
+      inventory: {
+        pistol: { mag: 12, reserve: 36 },
+        rifle: { mag: 30, reserve: 90 },
+      },
+    });
+    this.gates = [];
+    this.props = this.props.filter((o) => distance(o, p) > 3);
+    // Random loot must never steal the first E interaction from the tutorial terminal.
+    this.drops = this.drops.filter((d) => distance(d, p) > 2);
+    this.terminals = [
+      {
+        id: "training-terminal",
+        x: 7.5,
+        y: 7.5,
+        quiz: this.nextQuiz(),
+        solved: false,
+      },
+      ...this.terminals.slice(0, 4).filter((t) => distance(t, p) > 3),
+    ];
+    this.drops.unshift({
+      id: uid(),
+      x: 5.5,
+      y: 7.5,
+      kind: "chest",
+      reward: "ammo",
+    });
+    this.lamps.push({ x: p.x, y: p.y, r: 5, color: "amber" });
+    this.monsterWakeAt = Date.now() + 10000;
+    const far = this.cells.filter((c) => distance(c, p) > 9);
+    this.monsters.forEach((m, i) => {
+      if (i === 0) Object.assign(m, { x: 10.5, y: 6.5 });
+      else if (distance(m, p) < 8) Object.assign(m, far[i % far.length]);
+    });
+  }
   decorate() {
     const types = [
       "crate",
@@ -1790,7 +1832,7 @@ class World {
 
 let w,p,lastSeq=0,sendCount=0;const config={mode:'escape',duration:900,lives:5,rounds:1,mapSize:'small',monsters:'few',ammo:'limited',puzzles:true,practice:true};
 onmessage=e=>{const m=e.data;if(m.t==='create'){p={id:'local',name:String(m.name||'Operativ'),participates:true,joined:Date.now()};postMessage({t:'welcome',id:p.id,host:p.id,room:'LOCAL'});postMessage({t:'lobby',room:'LOCAL',host:p.id,config,players:[p]});}
-if(m.t==='start'){w=new World(config,[p],[0,0],1,145);const actor=w.getPlayer('local');Object.assign(actor,w.near({x:6.5,y:6.5}),{credits:1800,weapon:'rifle',inventory:{pistol:{mag:12,reserve:36},rifle:{mag:30,reserve:90}}});w.gates=[];w.terminals=[{id:'training-terminal',...w.near({x:actor.x+1,y:actor.y+1}),quiz:w.nextQuiz(),solved:false},...w.terminals.slice(0,4)];w.drops.unshift({id:uid(),...w.near({x:actor.x-1,y:actor.y+1}),kind:'chest',reward:'ammo'});w.lamps.push({x:actor.x,y:actor.y,r:5,color:'amber'});if(w.monsters.length)Object.assign(w.monsters[0],w.near({x:actor.x+4,y:actor.y}));postMessage({t:'map',map:w.map,config,room:'LOCAL'});postMessage(w.snapshotFor('local'));}
+if(m.t==='start'){w=new World(config,[p],[0,0],1,145);w.preparePractice('local');postMessage({t:'map',map:w.map,config,room:'LOCAL'});postMessage(w.snapshotFor('local'));}
 if(m.t==='input'&&w)w.setInput('local',m.input);
 if(m.t==='command'&&w)w.command('local',m);
 if(m.t==='pause'&&w){if(w.paused)w.endsAt+=Date.now()-w.pauseStarted;else w.pauseStarted=Date.now();w.paused=!w.paused;}

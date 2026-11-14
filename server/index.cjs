@@ -83,38 +83,7 @@ function start(r) {
   );
   r.world.quizSeen = r.quizSeen;
   r.world.quizDeck = [];
-  // A deterministic, reachable introductory encounter in solo practice.
-  if (r.config.practice) {
-    const w = r.world,
-      p = w.players.values().next().value;
-    Object.assign(p, w.near({ x: 6.5, y: 6.5 }), {
-      credits: 1800,
-      weapon: "rifle",
-      inventory: {
-        pistol: { mag: 12, reserve: 36 },
-        rifle: { mag: 30, reserve: 90 },
-      },
-    });
-    w.gates = [];
-    w.terminals = [
-      {
-        id: "training-terminal",
-        ...w.near({ x: p.x + 1, y: p.y + 1 }),
-        quiz: w.nextQuiz(),
-        solved: false,
-      },
-      ...w.terminals.slice(0, 4),
-    ];
-    w.drops.unshift({
-      id: randomUUID(),
-      ...w.near({ x: p.x - 1, y: p.y + 1 }),
-      kind: "chest",
-      reward: "ammo",
-    });
-    w.lamps.push({ x: p.x, y: p.y, r: 5, color: "amber" });
-    if (w.monsters.length)
-      Object.assign(w.monsters[0], w.near({ x: p.x + 4, y: p.y }));
-  }
+  if (r.config.practice) r.world.preparePractice(people[0].id);
   r.lastActive = Date.now();
   for (const p of r.people.values()) mapFor(r, p);
   return null;
