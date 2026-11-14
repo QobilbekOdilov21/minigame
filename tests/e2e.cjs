@@ -124,6 +124,24 @@ const fs = require("node:fs"),
     assert.equal(gs.count, 2);
     assert.notEqual(hs.id, gs.id);
     await host.screenshot({ path: "docs/screenshots/multiplayer.png" });
+    const world = rooms.get(code).world,
+      actor = world.getPlayer(hs.id),
+      terminal = world.terminals[0];
+    world.gates = [];
+    world.drops = [];
+    world.buyEndsAt = 0;
+    Object.assign(actor, { x: terminal.x, y: terminal.y });
+    await host.waitForFunction(
+      ({ x, y }) =>
+        Math.hypot(window.mazeDebug.local.x - x, window.mazeDebug.local.y - y) <
+        0.3,
+      { x: terminal.x, y: terminal.y },
+    );
+    await host.getByLabel("Izometrik o‘yin maydoni").press("e");
+    await host.getByRole("dialog").waitFor({ state: "visible" });
+    world.kill(actor, gs.id);
+    await host.getByRole("dialog").waitFor({ state: "hidden" });
+    note("death closes an open puzzle and prevents stale disabled answers");
     await page.setViewportSize({ width: 390, height: 844 });
     await page.waitForTimeout(150);
     await page.screenshot({ path: "docs/screenshots/mobile.png" });

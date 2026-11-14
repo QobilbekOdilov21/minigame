@@ -290,3 +290,15 @@ test("training first E always opens its terminal despite random loot placement",
     );
   }
 });
+
+test("escape ends when every life is exhausted and quiz expiry is private", () => {
+  const w = world("escape", 1);
+  w.preparePractice("p0");
+  const p = w.getPlayer("p0");
+  w.interact(p);
+  assert.ok(w.events.at(-1).expiresAt > Date.now());
+  w.kill(p, null);
+  assert.equal(w.phase, "round_end");
+  assert.equal(w.roundWinner, "MISSIYA BAJARILMADI");
+  assert.equal(w.terminals[0].reservedBy, null);
+});

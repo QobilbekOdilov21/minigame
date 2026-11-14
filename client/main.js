@@ -274,6 +274,15 @@ function receive(m) {
         y = me.y;
       Object.assign(me, m.me, { x, y, round: m.round });
     }
+    if (
+      dialogType === "puzzle" &&
+      (!m.me.alive ||
+        m.phase !== "playing" ||
+        m.now > (modalQuestion?.expiresAt || Infinity))
+    ) {
+      modalQuestion = null;
+      closeModal();
+    }
     for (const e of m.events || [])
       if (!seenEvents.has(e.id)) {
         seenEvents.add(e.id);
@@ -329,8 +338,14 @@ function renderLobby() {
 function processEvent(e) {
   renderer.onEvent(e);
   if (e.kind === "puzzle_open") {
+    if (!view?.me?.alive || view.phase !== "playing") return;
     modalQuestion = e;
     showPuzzle(e);
+    return;
+  }
+  if (e.kind === "puzzle_close" && dialogType === "puzzle") {
+    modalQuestion = null;
+    closeModal();
     return;
   }
   if (e.kind === "hint") toast(e.msg);

@@ -1024,6 +1024,12 @@ class World {
     p.lives = Math.max(0, p.lives - 1);
     p.respawnAt = p.lives > 0 ? Date.now() + 3200 : 0;
     p.input.fire = false;
+    for (const t of this.terminals) {
+      if (t.reservedBy === p.id) {
+        t.reservedBy = null;
+        t.reservedUntil = 0;
+      }
+    }
     const a = this.getPlayer(attacker);
     if (a && a.id !== p.id) {
       a.kills++;
@@ -1363,8 +1369,10 @@ class World {
       t.reservedUntil < Date.now() ||
       msg.quiz !== t.quiz ||
       !this.sight(p, t)
-    )
+    ) {
+      this.event("puzzle_close", { target: p.id });
       return;
+    }
     const q = QUIZZES[t.quiz];
     if (!q) return;
     if (msg.answer === q.correct) {
@@ -1501,7 +1509,14 @@ class World {
       }
       return;
     }
-    if (this.mode === "escape") return;
+    if (this.mode === "escape") {
+      if (list.every((p) => !p.alive && p.lives === 0))
+        this.endRound(
+          "MISSIYA BAJARILMADI",
+          "Barcha operativlarning jonlari tugadi",
+        );
+      return;
+    }
     if (this.mode === "ffa") {
       const possible = list.filter((p) => p.alive || p.lives > 0);
       if (possible.length === 1 && list.length > 1)
@@ -1746,6 +1761,7 @@ class World {
       target: p.id,
       terminal: t.id,
       quiz: t.quiz,
+      expiresAt: t.reservedUntil,
       question: { q: q.q, a: q.a },
     });
   }
