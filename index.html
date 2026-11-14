@@ -8,6 +8,7 @@
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%23101411'/%3E%3Cpath d='M12 50V14h20v15H21v21zm20 0V38h20V14H42v15' stroke='%23e4b85f' stroke-width='7' fill='none'/%3E%3C/svg%3E">
   <link rel="stylesheet" href="styles.css">
   <script src="https://cdn.jsdelivr.net/npm/peerjs@1.5.5/dist/peerjs.min.js" defer></script>
+  <script src="quiz-bank.js" defer></script>
   <script src="game.js" defer></script>
   <title>MAZE CLASH // Shadow Protocol</title>
 </head>
@@ -59,6 +60,7 @@
         <label class="switch-line"><span>JAMOADOSHGA ZARAR</span><input type="checkbox" id="cfgFriendly"><i></i></label>
         <label class="switch-line"><span>HOST HAM O‘YNAYDI</span><input type="checkbox" id="cfgHostPlays" checked><i></i></label>
         <label class="switch-line"><span>JUMBOQLAR VA LOOT</span><input type="checkbox" id="cfgPuzzles" checked><i></i></label>
+        <div class="field-pair"><label for="cfgMonsters">MAXLUQLAR <span>LABIRINT XAVFI</span></label><select id="cfgMonsters"><option value="none">O‘CHIRILGAN</option><option value="few" selected>4 TA / YENGIL</option><option value="normal">8 TA / O‘RTA</option><option value="horde">15 TA / QIYIN</option></select></div>
         <label class="switch-line"><span>OXIRGI DAQIQADA RADAR</span><input type="checkbox" id="cfgRadar" checked><i></i></label>
         <div class="nickname-field"><label for="hostNick">HOST NICKNAME</label><input id="hostNick" maxlength="18" autocomplete="nickname" value="Host" placeholder="Ismingiz"></div>
         <button id="createBtn" class="btn btn-accent btn-full">XONANI OCHISH <span>↗</span></button>
@@ -92,7 +94,7 @@
   </section>
 
   <section class="screen game-screen hidden" id="gameScreen">
-    <div class="game-header"><div class="game-header-left"><div class="operation-id">OPERATION <b id="gameRoom">—</b></div><div class="mode-name" id="hudMode">TEAM CLASH</div></div><div class="game-header-center"><span id="hudRound">ROUND 01 / 03</span><strong id="hudTime">08:00</strong><span id="hudAlive">00 ALIVE</span></div><div class="game-header-right"><button id="scoreBtn" class="hud-btn" title="Reyting">≡ <span>ROSTER</span></button><button id="shopBtn" class="hud-btn" title="Do‘kon (B)">▤ <span>ARSENAL [B]</span></button><button id="gameExitBtn" class="hud-btn exit-hud" title="Chiqish">✕</button></div></div>
+    <div class="game-header"><div class="game-header-left"><div class="operation-id">OPERATION <b id="gameRoom">—</b></div><div class="mode-name" id="hudMode">TEAM CLASH</div></div><div class="game-header-center"><span class="fps-indicator" id="fpsCounter">— FPS</span><span id="hudRound">ROUND 01 / 03</span><strong id="hudTime">08:00</strong><span id="hudAlive">00 ALIVE</span></div><div class="game-header-right"><button id="scoreBtn" class="hud-btn" title="Reyting">≡ <span>ROSTER</span></button><button id="shopBtn" class="hud-btn" title="Do‘kon (B)">▤ <span>ARSENAL [B]</span></button><button id="gameExitBtn" class="hud-btn exit-hud" title="Chiqish">✕</button></div></div>
     <div class="game-layout"><div class="canvas-wrapper"><canvas id="gameCanvas" tabindex="0" aria-label="Labirint o‘yini"></canvas><div class="game-vignette" aria-hidden="true"></div>
       <div class="kill-feed" id="killFeed"></div>
       <div class="game-prompt hidden" id="gamePrompt"></div>
@@ -101,7 +103,7 @@
       <div class="overlay-panel hidden" id="centerOverlay"></div>
     </div><aside class="game-sidebar">
       <div class="hud-block"><div class="hud-label"><span>OPERATIVE / STATUS</span><span id="hudRole">SCOUT</span></div><div class="operator-line"><span class="operator-avatar" id="hudAvatar">✦</span><div><strong id="hudName">PLAYER</strong><small id="hudTeam">NO FACTION</small></div><span id="hudLives" class="lives-symbol">◆ ◆ ◆</span></div><div class="health-row"><span>HEALTH</span><b id="hudHpText">100</b></div><div class="bar-track"><div class="bar-fill health" id="hudHpBar" style="width:100%"></div></div><div class="health-row armor-row"><span>ARMOR</span><b id="hudArmorText">0</b></div><div class="bar-track thin"><div class="bar-fill armor" id="hudArmorBar" style="width:0%"></div></div></div>
-      <div class="hud-block weapon-block"><div class="hud-label"><span>ACTIVE WEAPON</span><span id="hudWeaponClass">SIDEARM</span></div><div class="weapon-name" id="hudWeapon">MK1 / PISTOL</div><div class="ammo-line"><strong id="hudAmmo">12</strong><span>/</span><b id="hudReserve">36</b></div><div id="hudReload" class="reload-note">R / QAYTA O‘QLASH</div><div class="funds-line"><span>◈ KREDITLAR</span><b id="hudCredits">$600</b></div><div class="inventory-line" id="hudInventory">H MEDKIT ×0 · KEY ×0</div></div>
+      <div class="hud-block weapon-block"><div class="hud-label"><span>ACTIVE WEAPON</span><span id="hudWeaponClass">SIDEARM</span></div><div class="weapon-name" id="hudWeapon">MK1 / PISTOL</div><div class="hud-weapon-visual" id="hudWeaponVisual" aria-hidden="true"></div><div class="ammo-line"><strong id="hudAmmo">12</strong><span>/</span><b id="hudReserve">36</b></div><div id="hudReload" class="reload-note">R / QAYTA O‘QLASH</div><div class="funds-line"><span>◈ KREDITLAR</span><b id="hudCredits">$600</b></div><div class="inventory-line" id="hudInventory">H MEDKIT ×0 · KEY ×0</div></div>
       <div class="hud-block objective-block"><div class="hud-label"><span>MISSION DIRECTIVE</span><span id="hudObjectiveCount">01 / 04</span></div><h3 id="hudObjectiveTitle">MAQSAD</h3><p id="hudObjective">Labirintni o‘rganing va raqiblarni toping.</p><div class="task-progress"><div id="hudTaskProgress"></div></div></div>
       <div class="hud-block map-block"><div class="hud-label"><span>LOCAL RECON / FOG</span><span>MAP [M]</span></div><canvas id="miniMap" width="256" height="200"></canvas></div>
       <div class="hud-block quick-commands"><div class="hud-label"><span>QUICK COMMANDS</span><span>PC</span></div><div class="key-row"><kbd>WASD</kbd><span>HARAKAT</span><kbd>CLICK</kbd><span>OTISH</span></div><div class="key-row"><kbd>R</kbd><span>RELOAD</span><kbd>E</kbd><span>OLISH / TASK</span></div><div class="key-row"><kbd>Q</kbd><span>MAXSUS</span><kbd>SHIFT</kbd><span>SPRINT</span></div><div class="key-row"><kbd>1–5</kbd><span>QUROL</span><kbd>B</kbd><span>DO‘KON</span></div></div>
