@@ -10,3 +10,15 @@
 @media(min-width:821px){.mobile-utility{display:none!important}}
 
 .inventory-line{margin-top:13px;font:600 9px var(--mono);color:#aeb89e;border-top:1px dashed #536049;padding-top:11px}
+
+/* Shadow Protocol 2.0: tactile, low-glare night-vision visual system. */
+#gameCanvas{cursor:crosshair;image-rendering:auto;touch-action:none}
+.weapon-block{background:linear-gradient(120deg,#171f1b,#1c2824);border-left:3px solid #b2c09c}
+.hud-weapon-visual{height:75px;padding:3px 12px 2px;background:repeating-linear-gradient(0deg,#c4dfb007 0px,#c4dfb007 1px,transparent 1px,transparent 9px);display:flex;align-items:center;justify-content:flex-start}
+.gun-silhouette{width:100%;height:70px;max-width:300px;filter:drop-shadow(0 3px 5px #050e09)}
+.shop-item-icon .gun-silhouette{width:145px;height:56px;max-width:100%;display:block}
+.shop-item-icon:has(.gun-silhouette){font-size:initial;background:#26362e;border:1px solid #425b4d;border-radius:4px;overflow:hidden;display:flex;align-items:center;justify-content:center}
+.fps-indicator{font-family:'IBM Plex Mono',monospace;font-size:11px!important;color:#b4cca9;border:1px solid #456153;padding:4px 8px;background:#15231b}
+.game-vignette{pointer-events:none;opacity:.25}
+.puzzle-choice{transition:background .12s ease,border-color .12s ease;touch-action:manipulation}
+@media(max-width:700px){.hud-weapon-visual{height:53px}.gun-silhouette{height:48px}.fps-indicator{font-size:9px!important}.shop-item-icon .gun-silhouette{width:100px;height:42px}}
