@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="uz">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#101411">
+  <meta name="description" content="Maze Clash — sirli labirint ichidagi jamoaviy va erkin multiplayer o‘yin.">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%23101411'/%3E%3Cpath d='M12 50V14h20v15H21v21zm20 0V38h20V14H42v15' stroke='%23e4b85f' stroke-width='7' fill='none'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="styles.css?v=perf-20261114-2">
+  <script src="https://cdn.jsdelivr.net/npm/peerjs@1.5.5/dist/peerjs.min.js" defer></script>
+  <script src="quiz-bank.js" defer></script>
+  <script src="game.js?v=perf-20261114-2" defer></script>
+  <title>MAZE CLASH // Shadow Protocol</title>
+</head>
+<body>
+<div class="grain" aria-hidden="true"></div>
+<header class="global-header">
+  <a href="./" class="brand" aria-label="Maze Clash home"><span class="brand-mark"><i></i><i></i><i></i><i></i></span><span class="brand-copy"><b>MAZE<span>CLASH</span></b><small>SHADOW PROTOCOL <span class="version">/ 02</span></small></span></a>
+  <div class="status"><span class="status-light" id="statusLight"></span><span id="statusText">TIZIM TAYYOR</span></div>
+  <button class="sound-toggle" id="soundBtn" title="Ovoz yoqish / o‘chirish" aria-label="Ovozni yoqish/o‘chirish">♫ <span id="soundText">OFF</span></button>
+</header>
+<main id="app">
+  <section class="screen home-screen" id="homeScreen">
+    <div class="home-left">
+      <div class="eyebrow"><span class="signal-icon">✳</span> SYSONE ACADEMY / MULTIPLAYER LABYRINTH</div>
+      <h1>YO‘LINGNI<br>TOP.<br><em>ISHONMA.</em><br>OMON QOL.</h1>
+      <p class="intro">Bir xarita. Noma’lum raqiblar. Cheklangan o‘qlar. Do‘stlaringiz bilan bir xonada <strong>real vaqtda</strong> o‘ynang.</p>
+      <div class="features"><span>◈ 5 O‘YIN REJIMI</span><span>⌖ FOG OF WAR</span><span>▣ QURILMALARARO</span></div>
+      <div class="home-actions">
+        <button id="hostOpenBtn" class="btn btn-accent btn-large"><span>01 /</span> XONA YARATISH <span>↗</span></button>
+        <button id="joinOpenBtn" class="btn btn-outline btn-large"><span>02 /</span> XONAGA KIRISH <span>→</span></button>
+      </div>
+      <div class="micro-note"><span class="cross">+</span> Ro‘yxatdan o‘tish shart emas. Havola va ism yetarli.</div>
+    </div>
+    <div class="home-right"><div class="hero-board-wrap"><div class="hero-caption">FIG.01 / LABYRINTH RADAR SCAN</div><canvas id="heroCanvas" width="620" height="600" aria-label="Labirintning tasviriy ko‘rinishi"></canvas><div class="map-overlay one"><b>03</b><small>HIDDEN SECTORS</small></div><div class="map-overlay two"><span class="pulse-dot"></span> SIGNAL LOST</div><div class="hero-footer"><span>GRID 34° / NORTH</span><span>SCAN RANGE: 06 TILES</span></div></div></div>
+    <div class="home-footer"><span>© SYSONE ACADEMY / LAB 001</span><span>BU O‘YIN REAL PUL ISHLATMAYDI</span></div>
+  </section>
+
+  <section class="screen configuration-screen hidden" id="configScreen">
+    <div class="section-title"><button class="back-link" data-back="home">← ORQAGA</button><span>01 / XONA SOZLAMALARI</span></div>
+    <div class="config-header"><div><p class="eyebrow">MATCH CONFIGURATOR</p><h2>O‘YIN QOIDALARINI<br><em>SIZ BELGILAYSIZ.</em></h2></div><span class="config-stamp">HOST<br>CONTROL<br>ACCESS</span></div>
+    <div class="config-layout">
+      <div class="config-primary">
+        <h3 class="section-kicker">01 / REJIMNI TANLANG</h3>
+        <div class="mode-grid" id="modeGrid">
+          <button class="mode-card selected" data-mode="team"><span class="mode-icon">⌖</span><b>TEAM CLASH</b><small>QIZIL vs KO‘K / TAKTIK JANG</small><span class="mode-tag">2 JAMOA</span></button>
+          <button class="mode-card" data-mode="ffa"><span class="mode-icon">✦</span><b>FREE FOR ALL</b><small>HAR KIM O‘ZI UCHUN</small><span class="mode-tag">SOLO</span></button>
+          <button class="mode-card" data-mode="impostor"><span class="mode-icon">◉</span><b>SECRET AGENT</b><small>VAZIFALAR / YASHIRIN XOIN</small><span class="mode-tag">DEDUCTION</span></button>
+          <button class="mode-card" data-mode="escape"><span class="mode-icon">⬡</span><b>MAZE ESCAPE</b><small>JUMBOQ / KALIT / CHIQISH</small><span class="mode-tag">PUZZLE</span></button>
+          <button class="mode-card wide" data-mode="double"><span class="mode-icon">⚑</span><b>DOUBLE AGENT</b><small>IKKI JAMOA, HAR TOMONDA SIRLI XO‘IN</small><span class="mode-tag">BETRAYAL</span></button>
+        </div>
+      </div>
+      <aside class="config-sidebar">
+        <h3 class="section-kicker">02 / RAUND PARAMETRLARI</h3>
+        <div class="field-pair"><label for="cfgDuration">VAQT <span>DAQIQA</span></label><select id="cfgDuration"><option value="3">03</option><option value="5">05</option><option value="8" selected>08</option><option value="10">10</option><option value="15">15</option><option value="20">20</option></select></div>
+        <div class="field-pair"><label for="cfgLives">HAYOT <span>HAR RAUNDDA</span></label><select id="cfgLives"><option value="1">01 JON</option><option value="3" selected>03 JON</option><option value="5">05 JON</option></select></div>
+        <div class="field-pair"><label for="cfgRounds">RAUNDLAR</label><select id="cfgRounds"><option value="1">01</option><option value="3" selected>03</option><option value="5">05</option><option value="7">07</option></select></div>
+        <div class="field-pair"><label for="cfgMap">LABIRINT O‘LCHAMI</label><select id="cfgMap"><option value="small">IXCHAM / 29×29</option><option value="medium" selected>KATTA / 39×39</option><option value="large">GIGANT / 51×51</option></select></div>
+        <div class="field-pair"><label for="cfgAmmo">O‘Q-DORI</label><select id="cfgAmmo"><option value="limited" selected>CHEKLANGAN</option><option value="scarce">JUDA KAM</option></select></div>
+        <label class="switch-line"><span>JAMOADOSHGA ZARAR</span><input type="checkbox" id="cfgFriendly"><i></i></label>
+        <label class="switch-line"><span>HOST HAM O‘YNAYDI</span><input type="checkbox" id="cfgHostPlays" checked><i></i></label>
+        <label class="switch-line"><span>JUMBOQLAR VA LOOT</span><input type="checkbox" id="cfgPuzzles" checked><i></i></label>
+        <div class="field-pair"><label for="cfgMonsters">MAXLUQLAR <span>LABIRINT XAVFI</span></label><select id="cfgMonsters"><option value="none">O‘CHIRILGAN</option><option value="few" selected>4 TA / YENGIL</option><option value="normal">8 TA / O‘RTA</option><option value="horde">15 TA / QIYIN</option></select></div>
+        <label class="switch-line"><span>OXIRGI DAQIQADA RADAR</span><input type="checkbox" id="cfgRadar" checked><i></i></label>
+        <div class="nickname-field"><label for="hostNick">HOST NICKNAME</label><input id="hostNick" maxlength="18" autocomplete="nickname" value="Host" placeholder="Ismingiz"></div>
+        <button id="createBtn" class="btn btn-accent btn-full">XONANI OCHISH <span>↗</span></button>
+        <p class="field-hint">HOST sahifani yopsa, xona ham yopiladi. Sinf uchun barqaror internet kerak.</p>
+      </aside>
+    </div>
+  </section>
+
+  <section class="screen join-screen hidden" id="joinScreen">
+    <div class="section-title"><button class="back-link" data-back="home">← ORQAGA</button><span>02 / OPERATSIYAGA QO‘SHILISH</span></div>
+    <div class="join-panel">
+      <div class="join-art"><div class="join-art-outer"><div class="join-art-inner"><span>?</span></div></div><small>IDENTITY<br>UNCONFIRMED</small></div>
+      <div class="join-fields"><p class="eyebrow">SECURE ROOM ACCESS</p><h2>LABIRINT SIZNI<br>KUTMOQDA.</h2><label for="joinCode">XONA KODI</label><input id="joinCode" class="code-input" placeholder="ABC123" maxlength="9" autocomplete="off"><label for="joinNick">O‘YINCHI ISMI</label><input id="joinNick" maxlength="18" autocomplete="nickname" placeholder="Ismingizni yozing"><button id="joinBtn" class="btn btn-accent btn-full">XONAGA KIRISH <span>→</span></button><p class="field-hint" id="joinHint">Xona havolasini bosgan bo‘lsangiz, kod avtomatik to‘ldiriladi.</p></div>
+    </div>
+  </section>
+
+  <section class="screen lobby-screen hidden" id="lobbyScreen">
+    <div class="section-title"><button class="back-link" id="lobbyExitBtn">← CHIQISH</button><span id="lobbyModeLabel">MATCH / LOBBY</span></div>
+    <div class="lobby-layout">
+      <div class="lobby-main">
+        <div class="room-head"><div><p class="eyebrow">OPERATION READY / PRIVATE SESSION</p><h2>HAMMA TAYYORMI?</h2></div><div class="room-code-label">XONA KODI <strong id="lobbyRoomCode">———</strong></div></div>
+        <p class="room-sub">Havolani sinfdoshlaringizga yuboring. Ism yozib kirganlar shu yerda paydo bo‘ladi.</p>
+        <div class="share-row"><input id="shareUrl" readonly aria-label="Xona havolasi"><button class="btn btn-outline" id="copyLinkBtn">⧉ NUSXALASH</button></div>
+        <div class="lobby-meta"><span id="lobbyCount">0 / 12 O‘YINCHI</span><span id="lobbySettings">8 DAQIQA / 3 JON</span><span id="lobbyConnection">ALOQA KUTILMOQDA</span></div>
+        <div class="roster" id="roster"></div>
+        <div class="lobby-controls" id="hostLobbyControls"><button class="btn btn-accent" id="startBtn">MATCHNI BOSHLASH <span>↗</span></button><button class="btn btn-outline" id="shuffleBtn">↻ JAMOALARNI ARALASHTIRISH</button></div>
+        <div class="wait-host hidden" id="waitHostNotice"><span class="loading-wheel"></span> HOST MATCHNI BOSHLASHINI KUTING...</div>
+      </div>
+      <aside class="lobby-side"><div class="side-block"><span class="section-kicker">SEANSI TEKSHIRISH</span><h3 id="lobbyModeTitle">TEAM CLASH</h3><p id="lobbyModeDesc">Ikki jamoaga bo‘linib, labirintda raqiblarni yenging.</p></div><div class="side-block"><span class="section-kicker">QOIDALAR</span><ul><li>Jamoalar avtomatik tenglashtiriladi</li><li>O‘q-dori cheklangan, resurslar xaritadan topiladi</li><li>Devor ortidagi o‘yinchi ko‘rinmaydi</li><li>Jonlar tugasa, kuzatuvchi bo‘lasiz</li></ul></div><div class="side-block safe-note">◉ Shaxsiy xona: faqat havola yoki kodni bilganlar kirishi mumkin.</div></aside>
+    </div>
+  </section>
+
+  <section class="screen game-screen hidden" id="gameScreen">
+    <div class="game-header"><div class="game-header-left"><div class="operation-id">OPERATION <b id="gameRoom">—</b></div><div class="mode-name" id="hudMode">TEAM CLASH</div></div><div class="game-header-center"><span class="fps-indicator" id="fpsCounter">— FPS</span><span id="hudRound">ROUND 01 / 03</span><strong id="hudTime">08:00</strong><span id="hudAlive">00 ALIVE</span></div><div class="game-header-right"><button id="scoreBtn" class="hud-btn" title="Reyting">≡ <span>ROSTER</span></button><button id="shopBtn" class="hud-btn" title="Do‘kon (B)">▤ <span>ARSENAL [B]</span></button><button id="gameExitBtn" class="hud-btn exit-hud" title="Chiqish">✕</button></div></div>
+    <div class="game-layout"><div class="canvas-wrapper"><canvas id="gameCanvas" tabindex="0" aria-label="Labirint o‘yini"></canvas><div class="game-vignette" aria-hidden="true"></div>
+      <div class="kill-feed" id="killFeed"></div>
+      <div class="game-prompt hidden" id="gamePrompt"></div>
+      <div class="crosshair-label" id="crosshairLabel">LIVE / TACTICAL SIMULATION</div>
+      <div class="mobile-utility" id="mobileUtility"><button id="mobileSpecial">Q / MAXSUS</button><button id="mobileMeeting">M / MEETING</button></div><div class="mobile-controls" id="mobileControls"><div class="joystick" id="moveStick"><span class="joy-knob" id="moveKnob"></span></div><div class="action-pad"><button id="mobileInteract" title="Olish">OLISH</button><button id="mobileReload" title="Qayta o‘qlash">↻</button><button id="mobileFire" class="fire-pad" title="Otish">◎</button></div></div>
+      <div class="overlay-panel hidden" id="centerOverlay"></div>
+    </div><aside class="game-sidebar">
+      <div class="hud-block"><div class="hud-label"><span>OPERATIVE / STATUS</span><span id="hudRole">SCOUT</span></div><div class="operator-line"><span class="operator-avatar" id="hudAvatar">✦</span><div><strong id="hudName">PLAYER</strong><small id="hudTeam">NO FACTION</small></div><span id="hudLives" class="lives-symbol">◆ ◆ ◆</span></div><div class="health-row"><span>HEALTH</span><b id="hudHpText">100</b></div><div class="bar-track"><div class="bar-fill health" id="hudHpBar" style="width:100%"></div></div><div class="health-row armor-row"><span>ARMOR</span><b id="hudArmorText">0</b></div><div class="bar-track thin"><div class="bar-fill armor" id="hudArmorBar" style="width:0%"></div></div></div>
+      <div class="hud-block weapon-block"><div class="hud-label"><span>ACTIVE WEAPON</span><span id="hudWeaponClass">SIDEARM</span></div><div class="weapon-name" id="hudWeapon">MK1 / PISTOL</div><div class="hud-weapon-visual" id="hudWeaponVisual" aria-hidden="true"></div><div class="ammo-line"><strong id="hudAmmo">12</strong><span>/</span><b id="hudReserve">36</b></div><div id="hudReload" class="reload-note">R / QAYTA O‘QLASH</div><div class="funds-line"><span>◈ KREDITLAR</span><b id="hudCredits">$600</b></div><div class="inventory-line" id="hudInventory">H MEDKIT ×0 · KEY ×0</div></div>
+      <div class="hud-block objective-block"><div class="hud-label"><span>MISSION DIRECTIVE</span><span id="hudObjectiveCount">01 / 04</span></div><h3 id="hudObjectiveTitle">MAQSAD</h3><p id="hudObjective">Labirintni o‘rganing va raqiblarni toping.</p><div class="task-progress"><div id="hudTaskProgress"></div></div></div>
+      <div class="hud-block map-block"><div class="hud-label"><span>LOCAL RECON / FOG</span><span>MAP [M]</span></div><canvas id="miniMap" width="256" height="200"></canvas></div>
+      <div class="hud-block quick-commands"><div class="hud-label"><span>QUICK COMMANDS</span><span>PC</span></div><div class="key-row"><kbd>WASD</kbd><span>HARAKAT</span><kbd>CLICK</kbd><span>OTISH</span></div><div class="key-row"><kbd>R</kbd><span>RELOAD</span><kbd>E</kbd><span>OLISH / TASK</span></div><div class="key-row"><kbd>Q</kbd><span>MAXSUS</span><kbd>SHIFT</kbd><span>SPRINT</span></div><div class="key-row"><kbd>1–5</kbd><span>QUROL</span><kbd>B</kbd><span>DO‘KON</span></div></div>
+    </aside></div>
+    <div class="game-bottom"><span id="gameNotice">◌ LABIRINTGA KIRILDI</span><div class="game-host-controls hidden" id="gameHostControls"><button id="pauseBtn">Ⅱ PAUSE</button><button id="endRoundBtn">⏭ RAUNDNI TUGATISH</button></div><span>SYSONE ACADEMY / SHADOW PROTOCOL</span></div>
+    <div class="modal-backdrop hidden" id="shopModal"><section class="modal shop-dialog" role="dialog" aria-label="Qurol va resurslar do‘koni" aria-modal="true"><div class="modal-head"><div><p class="eyebrow">FIELD SUPPLY / BLACK MARKET</p><h2>ARSENAL</h2></div><button class="close-btn" data-close="shop">✕</button></div><div class="shop-top"><span>SIZNING BALANSINGIZ</span><strong id="shopCredits">◈ 0000</strong><small>BUY [B] / ESC CLOSE</small></div><div class="shop-grid" id="shopGrid"></div><p class="shop-foot">Qurol va resurslarni kreditga sotib oling yoki raqibdan tushgan lootni <b>E</b> bilan oling. Sotib olingan jihozlar inventaringizga qo‘shiladi.</p></section></div>
+    <div class="modal-backdrop hidden" id="scoreModal"><section class="modal score-dialog" role="dialog" aria-label="Natijalar jadvali" aria-modal="true"><div class="modal-head"><div><p class="eyebrow">LIVE COMBAT RECORDS</p><h2>MATCH ROSTER</h2></div><button class="close-btn" data-close="score">✕</button></div><div class="score-table" id="scoreTable"></div></section></div>
+    <div class="modal-backdrop hidden" id="puzzleModal"><section class="modal puzzle-dialog" role="dialog" aria-label="Jumboq" aria-modal="true"><div class="modal-head"><div><p class="eyebrow">ENCRYPTED TERMINAL / ACCESS REQUIRED</p><h2 id="puzzleTitle">KODNI YECHING</h2></div><button class="close-btn" data-close="puzzle">✕</button></div><p id="puzzleQuestion"></p><div class="puzzle-options" id="puzzleOptions"></div></section></div>
+    <div class="modal-backdrop hidden" id="meetingModal"><section class="modal meeting-dialog" role="dialog" aria-label="Maxfiy yig‘ilish" aria-modal="true"><div class="modal-head"><div><p class="eyebrow">SECURITY COUNCIL / EMERGENCY</p><h2>FAVQULODDA YIG‘ILISH</h2></div><span class="meeting-timer" id="meetingTime">00:30</span></div><p>Kim xoin? Bir kishiga ovoz bering yoki ovoz bermaslikni tanlang.</p><div id="meetingOptions" class="meeting-options"></div><div class="message-list" id="meetingMessages"></div><div class="chat-send"><input id="chatInput" maxlength="100" placeholder="Qisqa xabar (faqat yig‘ilishda)"><button id="chatSendBtn" class="btn btn-accent">YUBORISH ↗</button></div></section></div>
+    <div class="modal-backdrop hidden" id="confirmModal"><section class="modal confirm-dialog" role="dialog" aria-modal="true"><h2>O‘YINDAN CHIQISH</h2><p>Xonani tark etsangiz joriy natijalaringiz saqlanmasligi mumkin. Agar siz host bo‘lsangiz, match barcha o‘yinchilar uchun tugaydi.</p><div class="confirm-actions"><button class="btn btn-outline" id="cancelExitBtn">QOLISH</button><button class="btn btn-accent" id="confirmExitBtn">CHIQISH</button></div></section></div>
+  </section>
+</main>
+<div id="toastArea" class="toast-area" aria-live="polite"></div>
+</body>
+</html>

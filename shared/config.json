@@ -1,0 +1,225 @@
+{
+  "MODES": {
+    "team": {
+      "name": "TEAM CLASH",
+      "summary": "Qizillar vs Ko‘klar. Raqiblarni yenging va data-core qurilmasini himoya qiling yoki faollashtiring.",
+      "type": "tactical"
+    },
+    "ffa": {
+      "name": "FREE FOR ALL",
+      "summary": "Barcha o‘yinchilar mustaqil. Eng ko‘p raqibni yenggan va omon qolgan g‘olib.",
+      "type": "survival"
+    },
+    "impostor": {
+      "name": "SECRET AGENT",
+      "summary": "Agentlar topshiriqlarni bajaradi. Xoin yashirin hujum qiladi; yig‘ilishda kimga ishonishni hal qiling.",
+      "type": "social"
+    },
+    "escape": {
+      "name": "MAZE ESCAPE",
+      "summary": "Uchta kod-parchani toping, jumboq yeching va chiqish portaliga birinchi yetib boring.",
+      "type": "puzzle"
+    },
+    "double": {
+      "name": "DOUBLE AGENT",
+      "summary": "Ikki jamoa, lekin har biri orasida o‘z tomoniga sabotaj qiladigan sirli xoin bor.",
+      "type": "betrayal"
+    }
+  },
+  "WEAPONS": {
+    "pistol": {
+      "name": "MK1 PISTOL",
+      "class": "SIDEARM",
+      "price": 0,
+      "mag": 12,
+      "reserve": 36,
+      "damage": 19,
+      "speed": 18,
+      "delay": 310,
+      "load": 1350,
+      "spread": 0.045,
+      "pellets": 1,
+      "range": 13,
+      "icon": "⌐"
+    },
+    "smg": {
+      "name": "VECTOR SMG",
+      "class": "SMG",
+      "price": 550,
+      "mag": 24,
+      "reserve": 72,
+      "damage": 11,
+      "speed": 19,
+      "delay": 105,
+      "load": 1750,
+      "spread": 0.17,
+      "pellets": 1,
+      "range": 10,
+      "icon": "≡"
+    },
+    "rifle": {
+      "name": "AR-7 RIFLE",
+      "class": "ASSAULT",
+      "price": 850,
+      "mag": 30,
+      "reserve": 90,
+      "damage": 23,
+      "speed": 24,
+      "delay": 165,
+      "load": 2150,
+      "spread": 0.07,
+      "pellets": 1,
+      "range": 16,
+      "icon": "⌁"
+    },
+    "shotgun": {
+      "name": "BREACH-8",
+      "class": "SHOTGUN",
+      "price": 700,
+      "mag": 6,
+      "reserve": 24,
+      "damage": 11,
+      "speed": 17,
+      "delay": 850,
+      "load": 2350,
+      "spread": 0.22,
+      "pellets": 6,
+      "range": 6,
+      "icon": "≋"
+    },
+    "sniper": {
+      "name": "LONGSHOT",
+      "class": "MARKSMAN",
+      "price": 1200,
+      "mag": 5,
+      "reserve": 15,
+      "damage": 68,
+      "speed": 36,
+      "delay": 1100,
+      "load": 2600,
+      "spread": 0.01,
+      "pellets": 1,
+      "range": 23,
+      "icon": "⟜"
+    },
+    "lmg": {
+      "name": "M-60 SUPPORT",
+      "class": "SUPPORT",
+      "price": 1450,
+      "mag": 60,
+      "reserve": 120,
+      "damage": 18,
+      "speed": 22,
+      "delay": 125,
+      "load": 3600,
+      "spread": 0.13,
+      "pellets": 1,
+      "range": 17
+    }
+  },
+  "SHOP": [
+    {
+      "id": "pistol",
+      "name": "MK1 PISTOL",
+      "info": "12 / 36 · 19 DMG",
+      "cost": 180,
+      "icon": "⌐",
+      "kind": "gun"
+    },
+    {
+      "id": "smg",
+      "name": "VECTOR SMG",
+      "info": "24 / 72 · TEZKOR",
+      "cost": 550,
+      "icon": "≡",
+      "kind": "gun"
+    },
+    {
+      "id": "rifle",
+      "name": "AR-7 RIFLE",
+      "info": "30 / 90 · ANIQLIK",
+      "cost": 850,
+      "icon": "⌁",
+      "kind": "gun"
+    },
+    {
+      "id": "shotgun",
+      "name": "BREACH-8",
+      "info": "6 / 24 · YAQINDAN",
+      "cost": 700,
+      "icon": "≋",
+      "kind": "gun"
+    },
+    {
+      "id": "sniper",
+      "name": "LONGSHOT",
+      "info": "5 / 15 · UZOQDAN",
+      "cost": 1200,
+      "icon": "⟜",
+      "kind": "gun"
+    },
+    {
+      "id": "ammo",
+      "name": "AMMO BOX",
+      "info": "+2 MAGAZIN / TANLANGAN",
+      "cost": 170,
+      "icon": "▤",
+      "kind": "supply"
+    },
+    {
+      "id": "medkit",
+      "name": "MEDKIT",
+      "info": "+60 HP / MAX 100",
+      "cost": 230,
+      "icon": "✚",
+      "kind": "supply"
+    },
+    {
+      "id": "armor",
+      "name": "ARMOR PLATE",
+      "info": "+50 ZIRH / MAX 100",
+      "cost": 320,
+      "icon": "⬡",
+      "kind": "supply"
+    },
+    {
+      "id": "scanner",
+      "name": "RECON PULSE",
+      "info": "8 S RADAR / YAQIN RAQIBLAR",
+      "cost": 280,
+      "icon": "◉",
+      "kind": "supply"
+    },
+    {
+      "id": "smoke",
+      "name": "SMOKE CANISTER",
+      "info": "10 S TUMAN / YASHIRINISH",
+      "cost": 260,
+      "icon": "☷",
+      "kind": "supply"
+    },
+    {
+      "id": "energy",
+      "name": "ENERGY CELL",
+      "info": "TO‘LIQ STAMINA",
+      "cost": 95,
+      "icon": "ϟ",
+      "kind": "supply"
+    },
+    {
+      "id": "key",
+      "name": "MASTER KEY",
+      "info": "BIR ESHIK / 1 KOD-BO‘LAK",
+      "cost": 750,
+      "icon": "⟡",
+      "kind": "supply"
+    },
+    {
+      "id": "lmg",
+      "name": "M-60 SUPPORT",
+      "cost": 1450,
+      "info": "60 / 120 · YORDAMCHI",
+      "kind": "gun"
+    }
+  ]
+}

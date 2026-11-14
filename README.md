@@ -1,60 +1,72 @@
-# MAZE CLASH // Shadow Protocol 2.0
+# MAZE CLASH / Shadow Protocol 3.0
 
-**SysOne Academy** — 5-sinf o‘quvchilari uchun ko‘p o‘yinchili 2D tactical maze, shooter va IT jumboqlar platformasi.
+SysOne Academy uchun ishlaydigan **izometrik 2.5D tactical shooter**. X/Y o‘yin fizikasi, 2:1 izometrik pol, baland devorlar, oyoq nuqtasi bo‘yicha depth sorting va devor oldida cutaway. Grafik manba — foydalanuvchi bergan 19 ta original atlas va ulardan ishlab chiqilgan animatsiyalar.
 
-## O‘ynash
+## Ishga tushirish
 
-- `https://qobilbekodilov21.github.io/minigame/`
-- Host **XONA YARATISH** → rejim, vaqt, jonlar, raundlar, xarita, o‘q va **maxluqlar** sonini tanlaydi.
-- Mehmonlar xona havolasini ochib ism kiritadi, host matchni boshlaydi.
-- **Team Clash** (2 jamoa), **FFA**, **Secret Agent**, **Maze Escape**, **Double Agent**.
+Node.js 22 yoki yangiroq:
 
-## Yangiliklar
+```sh
+npm ci
+npm run build
+npm start
+```
 
-- **Night-vision** kayfiyatidagi chizilgan 3D-ish devorlar, pol qoplamalari, chiroqlar va yoritilgan zonalar.
-- O‘yinchi oldiga yo‘nalgan, devorlardan o‘tmaydigan **fonar konusi**; lampalar yonidagi dushmanlar ham ko‘rinadi.
-- Mayda piksellardan yig‘ilgan ikki oyoqli, qo‘lli, qurol ushlagan **pixel-personaj**.
-- **Mouse** kursori orqali nishonga olish va **chap tugmani ushlab otish**; boshqa joyga bosilganda otmaydi.
-- `requestAnimationFrame` render, yengillashtirilgan canvas piksellari va 12-frame minimap intervali, ko‘rinish raycast keshlash va past aniqlikdagi yoritish maskasi; yuqorida **haqiqiy joriy FPS** ko‘rsatiladi. Maqsad 60 FPS, qurilma/ekranga qarab pasayishi mumkin.
-- Qurol uchun aniq **SVG siluetlar** do‘konda va HUD’da, o‘q, reload, kredit, xarid, raqib loot va kubchalarga bo‘linish effektlari.
-- **1 000 ta** offline, 4 variantli, 5-sinfga mos o‘zbekcha IT savollar: qurilmalar, xavfsizlik, Scratch, klaviatura, algoritm, ikkilik sanoq, fayllar, bit/bayt.
-- **O‘yin savolni tekshiradi:** noto‘g‘rida yangi tasodifiy savol chiqadi (20 kredit jarima), to‘g‘rida **mukofot sandig‘i** tushadi. `[E]` bilan sandiqni oching va tasodifiy qurol/o‘q/zirh/kredit/medkit va boshqa resursni oling.
-- Bitta match davomida oldingi savollar qayta chiqmasligi uchun markaziy savollar tarixidan foydalaniladi.
-- **Maxluqlar:** o‘chirish / 4 ta / 8 ta / 15 ta. AI labirint bo‘ylab o‘yinchiga yaqinlashadi, hujum qiladi, o‘ldirilganda loot qoldiradi.
+`http://localhost:3000` ni oching. Boshqa qurilma shu serverning LAN manziliga kiradi. Internetda HTTPS/WSS ishlating. `PORT` (default 3000) va ixtiyoriy `ALLOWED_ORIGIN` environment qiymatlari mavjud.
+
+**Mashqni boshlash** bir kishilik lokal o‘yinni Web Worker’da ochadi. Mashqda 1 800 kredit, rifle, yaqin terminal va sandiq bor. **Xona yaratish** va **Xonaga kirish** haqiqiy authoritative Node/WebSocket serveridan foydalanadi. Static/GitHub Pages clientida multiplayer uchun server manzilini kiriting; sahifa o‘zi backend host qilmaydi.
 
 ## Boshqaruv
 
-| Amal | Kompyuter |
+| Tugma | Amal |
 |---|---|
-| Harakat | WASD yoki o‘q tugmalari |
-| Nishon | Sichqoncha harakati |
-| Otish | **Sichqoncha chap tugmasi** (ushlab turish) |
-| Qayta o‘qlash | R |
-| Interact / terminal / sandiq / loot | E |
-| Do‘kon | B |
-| Qo‘shimcha qobiliyat | Q |
-| Medkit | H |
-| Qurol tanlash | 1–5 |
-| Hisob | Tab |
-| Secret Agent yig‘ilishi | M |
+| WASD / strelkalar | Ekran yo‘nalishida yurish |
+| Mouse + chap tugma | Nishon / ushlab otish |
+| Shift | Sprint, stamina cheklangan |
+| R / E | Reload / terminal, loot, eshik yoki maqsad |
+| B / 1–6 | Arsenal / qurol tanlash |
+| H / Q | Medkit / rejimning maxsus harakati |
+| Tab / M | Reyting / Secret Agent yig‘ilishi |
+| Esc | Oynani yopish |
 
-Telefon: virtual joystick va ekrandagi tugmalar.
+Telefon: chap joystick; o‘ng E, R, otish. Mobil otish faqat server ochgan eng yaqin ko‘rinadigan raqibni nishonga oladi.
 
-## Fayllar
+## Beshta rejim
 
-- `index.html` — barcha ekranlar va semantik HTML.
-- `styles.css` — moslashuvchan qorong‘i interfeys.
-- `game.js` — host boshqaruvchi o‘yin dvigateli, vizual render va PeerJS multiplayer.
-- `quiz-bank.js` — tekshirilgan **1000 ta** savollar bazasi.
-- `build_questions.py` — savollar bazasini qayta yaratish uchun deterministik generator.
+| Rejim | Qoidalar |
+|---|---|
+| Team Clash | Qizil/ko‘k, data core faollashtirish/zararsizlantirish, 6 soniya buy phase |
+| Free For All | Individual jang, jonlar yoki vaqt bo‘yicha g‘alaba |
+| Secret Agent | Crew/traitor, IT vazifalar, yashirin hujum, yig‘ilish va ovoz |
+| Maze Escape | 3 kod-parcha, terminallar, maxluqlar va chiqish |
+| Double Agent | Jamoaviy jang, har jamoada yashirin agent va sabotaj |
 
-GitHub Pages statik hosting uchun. PeerJS Cloud signalizatsiya va brauzerlar orasida P2P aloqani ta’minlaydi. O‘qituvchi sahifani yopsa match tugaydi. Maktabning sust tarmog‘ida yoki NAT/firewall ortida ulanish ishlamasligi mumkin; 20–30 qurilmali barqaror o‘yin uchun WebSocket serveri va serverda o‘yin holati boshqaruvini tavsiya qilamiz.
+Team/FFA kamida 2; Secret/Double kamida 4; Escape 1–30 qatnashchi. 20 qatnashchi 10v10, 21 qatnashchi 11v10. O‘yin vaqtida yangi odam kiritilmaydi; uzilgan qatnashchi o‘z tokeni bilan qayta ulanadi. Host uzilsa boshqaruv online qatnashchiga o‘tadi. Client faqat input/command beradi; HP, economy, hit, loot, quiz va visibility serverda tekshiriladi.
 
-Darsda ishlatish uchun sinfda avval 2 qurilma bilan sinovdan o‘tkazing. O‘yin ichidagi kreditlar haqiqiy pul emas.
+## Assetlar va animatsiya
 
-## Performance patch / Mouse & 60 FPS
+- `art/source/` — yuklangan 19 ta JPEG manba; `art/generated/` — yangi operativ va maxluq yurish kadrlarining shaffof PNG manbalari.
+- `npm run build:assets` — 324 hududni ajratadi, chetdan ulangan JPEG fonini alpha qiladi, 5 WebP atlasga joylaydi; `manifest.json` pivot, manba SHA-256, kadrlar va FPS ma’lumotlarini saqlaydi.
+- Operativ: 8 yo‘nalish × 8 yurish kadri; idle, sprint, recoil/muzzle, reload progress va hit/death effektlari.
+- 6 maxluq: 8 yurish kadri; hozir diagonal SE va oynalangan SW ko‘rinishlari. To‘liq 8 tomonli maxluq animatsiyasi hali yo‘q.
+- Muhit: lampalar, terminal holatlari, generator bug‘i, ekran/indikatorlar, sandiq, pickup suzishi, VFX source-sequences. Statik devor/polga anatomik yurish animatsiyasi qo‘llanmaydi.
+- Barcha manba rasmlar Asset arxivida ko‘rinadi. Har bir import qilingan region har matchda chizilmaydi: UI variantlari va alternativlar manifestda saqlanadi.
 
-- Sichqoncha koordinatasi `pointermove` orqali ekranga nisbatan uzluksiz kuzatiladi; chap tugma otadi. WASD yurishda ham burilish qoladi.
-- O‘qituvchi/host kamera va personaj holati endi tarmoq snapshotiga bog‘lanmagan; client harakati lokal silliqlanadi.
-- Ko‘rish hisoblari keshlanadi; kafellar sprite keshga olinadi; yoritish canvasining ichki aniqligi adaptiv, ekrandagi tashqi o‘lcham o‘zgarmaydi.
-- FPS past bo‘lsa, ichki render aniqligi avtomatik pasayadi. 60 FPS maqsad, kafolat emas (qurilma va tarmoq sharoitiga bog‘liq).
+## Tekshiruv
+
+```sh
+npm run check       # syntax, 1000 quiz va atlaslar
+npm test           # fizika, rejimlar, xavfsizlik, economy, ikki WS client
+npm run test:e2e    # real Chromium: boshqaruv, quiz, reload, 2 browser, mobile
+npm run test:load   # 20 client + 15 monster, 6 soniya
+```
+
+Natijalar: [docs/TEST_REPORT_UZ.md](docs/TEST_REPORT_UZ.md), [browser-results.json](docs/browser-results.json), [load-results.json](docs/load-results.json). Skrinshotlar `docs/screenshots/`da. 60 FPS tanlangan lokal test sahnasida o‘lchandi; barcha qurilma va internet ulanishi uchun kafolat emas.
+
+## Arxitektura va joylash
+
+`client/` — renderer, input, UI, network; `server/` — authoritative simulation, rooms, private savollar; `shared/` — ommaviy qurol/rejim konfiguratsiyasi; `tools/` — import/build/check; `legacy/` — avvalgi 2D versiyaning saqlangan nusxasi. Server HTTP allowlist orqali `server/`, legacy va savol javoblarini to‘g‘ridan-to‘g‘ri bermaydi. Lokal practice-worker savollarni o‘zida saqlaydi; u offline mashq bo‘lgani sababli uning javoblarini sir saqlash kafolati yo‘q. Multiplayer client savolning faqat matni va variantlarini oladi.
+
+Server 30 Hz, snapshot 15 Hz, client local prediction + yumshoq reconciliation, remote interpolation. Rooms RAM’da: restart/deploy barcha matchlarni tugatadi. Render Free demo tarifi 15 daqiqa trafik bo‘lmasa uxlaydi; bu 24/7 production SLA emas. O‘yin kreditlari haqiqiy pul emas.
+
+`main` yangilanmagan. Qabul qilinmaguncha rebuild branch va PR orqali ko‘rib chiqing. Master-briefning hali yopilmagan talablari [docs/ACCEPTANCE.md](docs/ACCEPTANCE.md)da ochiq ko‘rsatilgan.
