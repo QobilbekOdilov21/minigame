@@ -168,14 +168,14 @@ scenarios=[
 ]
 for i,sc in enumerate(scenarios):
  stem,c,*wrong=sc
- for variant in range(5):
+ for variant in range(1):
   opener=['Vaziyat','Internet xavfsizligi','Raqamli odob','Xavfsiz tanlov','Amaliy misol'][variant]
   add(f'{opener} {variant+1}: {stem}. Qaysi ish to‘g‘ri?',c,wrong,'Internet xavfsizligi')
 # Keyboard shortcuts 60 varied scenarios: 15*4
 shortcuts=[('Ctrl + C','Nusxa olish'),('Ctrl + V','Joylashtirish'),('Ctrl + X','Kesib olish'),('Ctrl + Z','Oxirgi amalni bekor qilish'),('Ctrl + S','Saqlash'),('Ctrl + A','Hammasini tanlash'),('Ctrl + F','Qidirish'),('Ctrl + P','Chop etish'),('Ctrl + N','Yangi hujjat yoki oyna'),('Ctrl + O','Faylni ochish'),('Alt + Tab','Oynalar orasida o‘tish'),('Ctrl + T','Brauzerda yangi yorliq'),('Ctrl + W','Joriy yorliqni yopish'),('Ctrl + R','Sahifani yangilash'),('Ctrl + B','Matnni qalin qilish')]
 for combo,desc in shortcuts:
  wrong=[v for c,v in shortcuts if v!=desc]
- for j in range(4):
+ for j in range(1):
   q=[f'Klaviaturada {combo} tugmalari odatda nima qiladi?',f'Kompyuter darsida {combo} bosildi. Natijasi nima?',f'{combo} qisqa buyrug‘ining vazifasini toping.',f'Matn yoki brauzerda {combo} tugmalari uchun to‘g‘ri javobni belgilang.'][j]
   opts=[wrong[(shortcuts.index((combo,desc))+k*3+j)%len(wrong)] for k in range(3)]
   add(q,desc,opts,'Klaviatura')
@@ -183,7 +183,7 @@ for combo,desc in shortcuts:
 exts=[('png','Rasm'),('jpg','Rasm'),('gif','Animatsiyali rasm'),('mp3','Ovoz'),('wav','Ovoz'),('mp4','Video'),('txt','Oddiy matn'),('docx','Word hujjati'),('xlsx','Excel jadvali'),('pptx','PowerPoint taqdimoti'),('pdf','PDF hujjat'),('zip','Arxiv'),('html','Veb-sahifa'),('css','Veb-sahifa uslubi'),('js','JavaScript kodi'),('py','Python kodi'),('svg','Vektor rasm'),('webp','Rasm'),('csv','Jadval ma’lumoti'),('json','Tuzilgan ma’lumot')]
 for ext,kind in exts:
  opts=[k for e,k in exts if k!=kind]
- for j in range(2):
+ for j in range(1):
   name=['dars','maktab','rasm','hisobot'][j]
   add(f'“{name}.{ext}” faylini ko‘rsangiz, uning turi nima?',kind,[opts[(j*3+k*4)%len(opts)] for k in range(3)],'Fayllar')
 # Pattern & logic, enough to reach >=1000
@@ -215,8 +215,8 @@ assert len(selected)==1000 and len({x['q'] for x in selected})==1000
 assert all(len(x['a'])==4 and len(set(x['a']))==4 and isinstance(x['correct'],int) and 0<=x['correct']<4 for x in selected)
 # write lean JSON with no topic to minimize payload
 bank=[{k:x[k] for k in ['q','a','correct']} for x in selected]
-out=Path(__file__).with_name('quiz-bank.js')
-out.write_text('/* SysOne Academy · 1000 offline Uzbek 5th-grade IT questions (generated and checked) */\nwindow.MAZE_QUIZ_BANK = '+json.dumps(bank,ensure_ascii=False,separators=(',',':'))+';\n',encoding='utf8')
+out=Path(__file__).parent/'server'/'quiz-bank.json'
+out.write_text(json.dumps(bank,ensure_ascii=False,separators=(',',':'))+'\n',encoding='utf8')
 from collections import Counter
 print('GENERATED:',len(bank),'from',len(items),'candidates | topics:',dict(Counter(x['topic'] for x in selected)))
 print('SAMPLE:',bank[0], 'SIZE KB:',round(out.stat().st_size/1024,1))

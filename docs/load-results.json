@@ -1,0 +1,11 @@
+{
+  "players": 20,
+  "monsters": 15,
+  "seconds": 6,
+  "ticks": 189,
+  "meanTickMs": 2.859,
+  "maxTickMs": 20,
+  "minSnapshots": 94,
+  "snapshotHz": 15.7,
+  "rssMB": 74
+}

@@ -1,0 +1,28 @@
+name: Maze Clash quality
+on:
+  push:
+    branches: [main, feat/maze-clash-2-5d-rebuild]
+  pull_request:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - run: npm run check
+      - run: npm test
+      - run: npm run test:load
+      - run: npm run test:e2e
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: maze-clash-test-evidence
+          path: |
+            docs/screenshots/
+            docs/*results.json

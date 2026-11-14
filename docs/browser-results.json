@@ -1,0 +1,24 @@
+{
+  "errors": [],
+  "checks": [
+    "offline worker starts real gameplay with 324 asset regions",
+    "nearby E opens a real quiz",
+    "WASD, moving pointer and held fire run simultaneously",
+    "shop opens and server reload transfers reserve to magazine",
+    "isometric gameplay screenshot captured",
+    "two browser clients create, invite, join and start a multiplayer match",
+    "death closes an open puzzle and prevents stale disabled answers",
+    "390px mobile layout has no horizontal overflow",
+    "no browser console or uncaught JavaScript errors"
+  ],
+  "performance": {
+    "viewport": [
+      1440,
+      1000
+    ],
+    "fps": 48,
+    "meanRenderMs": 3.94,
+    "p95RenderMs": 8.9,
+    "renderer": "Chromium software headless; no hardware certification"
+  }
+}
