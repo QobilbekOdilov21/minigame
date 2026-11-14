@@ -15,7 +15,7 @@
 - O‘yinchi oldiga yo‘nalgan, devorlardan o‘tmaydigan **fonar konusi**; lampalar yonidagi dushmanlar ham ko‘rinadi.
 - Mayda piksellardan yig‘ilgan ikki oyoqli, qo‘lli, qurol ushlagan **pixel-personaj**.
 - **Mouse** kursori orqali nishonga olish va **chap tugmani ushlab otish**; boshqa joyga bosilganda otmaydi.
-- `requestAnimationFrame` render, yengillashtirilgan canvas piksellari va 5-frame minimap intervali; yuqorida **haqiqiy joriy FPS** ko‘rsatiladi. Maqsad 60 FPS, qurilma/ekranga qarab pasayishi mumkin.
+- `requestAnimationFrame` render, yengillashtirilgan canvas piksellari va 12-frame minimap intervali, ko‘rinish raycast keshlash va past aniqlikdagi yoritish maskasi; yuqorida **haqiqiy joriy FPS** ko‘rsatiladi. Maqsad 60 FPS, qurilma/ekranga qarab pasayishi mumkin.
 - Qurol uchun aniq **SVG siluetlar** do‘konda va HUD’da, o‘q, reload, kredit, xarid, raqib loot va kubchalarga bo‘linish effektlari.
 - **1 000 ta** offline, 4 variantli, 5-sinfga mos o‘zbekcha IT savollar: qurilmalar, xavfsizlik, Scratch, klaviatura, algoritm, ikkilik sanoq, fayllar, bit/bayt.
 - **O‘yin savolni tekshiradi:** noto‘g‘rida yangi tasodifiy savol chiqadi (20 kredit jarima), to‘g‘rida **mukofot sandig‘i** tushadi. `[E]` bilan sandiqni oching va tasodifiy qurol/o‘q/zirh/kredit/medkit va boshqa resursni oling.
@@ -51,3 +51,10 @@ Telefon: virtual joystick va ekrandagi tugmalar.
 GitHub Pages statik hosting uchun. PeerJS Cloud signalizatsiya va brauzerlar orasida P2P aloqani ta’minlaydi. O‘qituvchi sahifani yopsa match tugaydi. Maktabning sust tarmog‘ida yoki NAT/firewall ortida ulanish ishlamasligi mumkin; 20–30 qurilmali barqaror o‘yin uchun WebSocket serveri va serverda o‘yin holati boshqaruvini tavsiya qilamiz.
 
 Darsda ishlatish uchun sinfda avval 2 qurilma bilan sinovdan o‘tkazing. O‘yin ichidagi kreditlar haqiqiy pul emas.
+
+## Performance patch / Mouse & 60 FPS
+
+- Sichqoncha koordinatasi `pointermove` orqali ekranga nisbatan uzluksiz kuzatiladi; chap tugma otadi. WASD yurishda ham burilish qoladi.
+- O‘qituvchi/host kamera va personaj holati endi tarmoq snapshotiga bog‘lanmagan; client harakati lokal silliqlanadi.
+- Ko‘rish hisoblari keshlanadi; kafellar sprite keshga olinadi; yoritish canvasining ichki aniqligi adaptiv, ekrandagi tashqi o‘lcham o‘zgarmaydi.
+- FPS past bo‘lsa, ichki render aniqligi avtomatik pasayadi. 60 FPS maqsad, kafolat emas (qurilma va tarmoq sharoitiga bog‘liq).
