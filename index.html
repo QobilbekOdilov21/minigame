@@ -15,7 +15,109 @@
 
 </style>
   <script src="https://cdn.jsdelivr.net/npm/peerjs@1.5.5/dist/peerjs.min.js" defer></script>
-  <script defer>
+
+</head>
+<body>
+  <div class="bg-glow glow-a"></div><div class="bg-glow glow-b"></div>
+  <header class="topbar shell">
+    <a class="brand" href="./" aria-label="Bosh sahifa">
+      <span class="brand-symbol">S<span>✦</span></span>
+      <span><strong>SysOne Academy</strong><small>CLASSROOM PLAYGROUND</small></span>
+    </a>
+    <div class="connection" id="connection"><span class="status-dot"></span><span id="connectionText">Boshlashga tayyor</span></div>
+  </header>
+
+  <main class="shell">
+    <section id="homeScreen" class="home-screen">
+      <div class="home-copy">
+        <span class="eyebrow">✨ BIRGA O‘YNANG, BIRGA O‘RGANING</span>
+        <h1>Jamoangizni <span>g‘alabaga</span> olib chiqing!</h1>
+        <p>Havoladan kiring, ismingizni yozing va sinfdoshlaringiz bilan real vaqtda bellashing. Hech qanday akkaunt shart emas.</p>
+        <div class="feature-pills"><span>🧠 Viktorina</span><span>⭐ Yulduzlar arenasi</span><span>🏆 Jamoalar</span></div>
+        <div class="home-panels">
+          <div class="panel home-panel" id="createPanel">
+            <div class="panel-head"><div class="mini-icon purple">👩‍🏫</div><div><h2>O‘qituvchiman</h2><p>Yangi xona ochish</p></div></div>
+            <label for="teamCount">Jamoalar soni</label>
+            <select id="teamCount"><option value="2">2 ta jamoa</option><option value="3" selected>3 ta jamoa</option></select>
+            <button id="createBtn" class="btn btn-primary full">🚀 Xona yaratish</button>
+          </div>
+          <div class="panel home-panel" id="joinPanel">
+            <div class="panel-head"><div class="mini-icon orange">🎮</div><div><h2>O‘quvchiman</h2><p>Do‘stlar bilan o‘ynash</p></div></div>
+            <label for="roomInput">Xona havolasi yoki kodi</label>
+            <input id="roomInput" type="text" placeholder="Havolani yoki kodni kiriting" autocomplete="off" />
+            <button id="goJoinBtn" class="btn btn-secondary full">➡️ Xonaga kirish</button>
+          </div>
+        </div>
+      </div>
+      <div class="hero-art" aria-hidden="true">
+        <div class="art-orbit orbit-1"></div><div class="art-orbit orbit-2"></div>
+        <div class="hero-star star1">⭐</div><div class="hero-star star2">💎</div><div class="hero-star star3">⚡</div>
+        <div class="art-main"><div class="big-trophy">🏆</div><strong>GAME ON!</strong><small>LEVEL UP TOGETHER</small></div>
+        <div class="floating-score"><span>🔴 Qizillar</span><b>120</b></div>
+        <div class="floating-score score-bottom"><span>🔵 Ko‘klar</span><b>100</b></div>
+      </div>
+    </section>
+
+    <section id="joinScreen" class="join-screen hidden">
+      <div class="panel join-card">
+        <div class="join-illustration">🎮</div>
+        <span class="eyebrow">O‘YINGA XUSH KELIBSIZ!</span>
+        <h1>Ismingizni yozing</h1>
+        <p>Ismingiz jamoa a’zolari va natijalar jadvalida ko‘rinadi.</p>
+        <label for="nickname">Ismingiz (yoki taxallusingiz)</label>
+        <input id="nickname" maxlength="18" placeholder="Masalan, Aziz" autocomplete="nickname" />
+        <button id="joinBtn" class="btn btn-primary full">🎯 O‘yinga qo‘shilish</button>
+        <div class="room-hint" id="joinRoomHint"></div>
+        <button id="backBtn" class="text-btn">← Orqaga qaytish</button>
+      </div>
+    </section>
+
+    <section id="gameScreen" class="game-screen hidden">
+      <div class="room-header panel">
+        <div><span class="eyebrow">🔴 JONLI XONA</span><h1>Jamoaviy o‘yin maydoni</h1><p id="roomStatus">Xona tayyor</p></div>
+        <div class="room-actions"><button class="btn btn-ghost" id="copyBtn">🔗 Havolani nusxalash</button><button class="btn btn-ghost" id="leaveBtn">Chiqish</button></div>
+      </div>
+      <div class="score-strip" id="scoreboard"></div>
+      <div class="layout-grid">
+        <div class="game-content">
+          <section class="panel play-panel">
+            <div id="lobbyView" class="lobby-view"><div class="giant-icon">🎉</div><h2>Hamma tayyormi?</h2><p>O‘qituvchi o‘yinni boshlaguncha kuting. Do‘stlaringizni havola orqali taklif qiling!</p><div class="waiting-dots"><i></i><i></i><i></i></div></div>
+            <div id="quizView" class="hidden">
+              <div class="round-top"><span class="mode-tag">🧠 AQL MAYDONI</span><span id="quizProgress" class="subtle">1 / 12</span></div>
+              <div class="timer-wrap"><span>Qolgan vaqt</span><strong id="quizTimer">20s</strong></div>
+              <h2 class="question" id="questionText"></h2>
+              <div class="answer-grid" id="answers"></div>
+              <p class="help-text" id="answerInfo">Javobni tanlang!</p>
+            </div>
+            <div id="arenaView" class="hidden">
+              <div class="round-top"><span class="mode-tag">⭐ YULDUZLAR ARENASI</span><span id="arenaTimer" class="subtle">90s</span></div>
+              <p class="arena-tip">Yulduzga yetib boring: har bir yulduz = <strong>2 ball</strong>. WASD / strelkalar yoki pastdagi tugmalardan foydalaning.</p>
+              <div id="arenaBoard" class="arena-board" aria-label="Harakatli o‘yin maydoni"></div>
+              <div id="dpad" class="dpad">
+                <button type="button" class="direction up" data-move="up" aria-label="Yuqoriga">▲</button>
+                <button type="button" class="direction left" data-move="left" aria-label="Chapga">◀</button>
+                <button type="button" class="direction down" data-move="down" aria-label="Pastga">▼</button>
+                <button type="button" class="direction right" data-move="right" aria-label="O‘ngga">▶</button>
+              </div>
+            </div>
+            <div id="finishedView" class="finish-view hidden"><div class="giant-icon">🏆</div><span class="eyebrow">BOSQICH TUGADI</span><h2 id="winnerText">Barakalla!</h2><p>O‘qituvchi keyingi bosqichni boshlashi mumkin.</p></div>
+          </section>
+          <section id="adminPanel" class="panel admin-panel hidden">
+            <div class="admin-header"><div><span class="eyebrow">👩‍🏫 O‘QITUVCHI PANELI</span><h3>O‘yinni boshqarish</h3></div><span class="admin-chip">ADMIN</span></div>
+            <div class="admin-buttons"><button id="startQuizBtn" class="btn btn-primary">🧠 Viktorina boshlash</button><button id="nextQuestionBtn" class="btn btn-secondary hidden">Keyingi savol →</button><button id="startArenaBtn" class="btn btn-orange">⭐ Arena boshlash</button><button id="finishBtn" class="btn btn-ghost">🏁 Bosqichni tugatish</button><button id="resetBtn" class="btn btn-ghost">↻ Ballarni tozalash</button></div>
+            <p class="admin-note">O‘quvchilar avtomatik jamoalarga ajratiladi. Viktorina va arena ballari qo‘shib hisoblanadi.</p>
+          </section>
+        </div>
+        <aside class="side-content">
+          <section class="panel people-panel"><div class="side-title"><h3>👥 Qatnashchilar</h3><span class="count-pill" id="playerCount">0</span></div><div id="playersList" class="players-list"></div></section>
+          <section class="panel instruction-panel"><h3>💡 Qanday o‘ynaladi?</h3><p><b>Viktorina:</b> savollarga to‘g‘ri javob berib 10 ball oling.</p><p><b>Arena:</b> rangli belgini boshqarib yulduzlar yig‘ing.</p><p><b>G‘alaba:</b> eng ko‘p ball olgan jamoa yutadi.</p></section>
+        </aside>
+      </div>
+    </section>
+  </main>
+  <footer class="footer shell">SysOne Academy · O‘rganish ham o‘yin bo‘lishi mumkin ✨</footer>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <script>
 /* SysOne Academy Classroom Game — static, client-hosted multiplayer via PeerJS. */
 'use strict';
 
@@ -637,106 +739,5 @@ if (document.readyState === 'loading') {
 }
 
 </script>
-</head>
-<body>
-  <div class="bg-glow glow-a"></div><div class="bg-glow glow-b"></div>
-  <header class="topbar shell">
-    <a class="brand" href="./" aria-label="Bosh sahifa">
-      <span class="brand-symbol">S<span>✦</span></span>
-      <span><strong>SysOne Academy</strong><small>CLASSROOM PLAYGROUND</small></span>
-    </a>
-    <div class="connection" id="connection"><span class="status-dot"></span><span id="connectionText">Boshlashga tayyor</span></div>
-  </header>
-
-  <main class="shell">
-    <section id="homeScreen" class="home-screen">
-      <div class="home-copy">
-        <span class="eyebrow">✨ BIRGA O‘YNANG, BIRGA O‘RGANING</span>
-        <h1>Jamoangizni <span>g‘alabaga</span> olib chiqing!</h1>
-        <p>Havoladan kiring, ismingizni yozing va sinfdoshlaringiz bilan real vaqtda bellashing. Hech qanday akkaunt shart emas.</p>
-        <div class="feature-pills"><span>🧠 Viktorina</span><span>⭐ Yulduzlar arenasi</span><span>🏆 Jamoalar</span></div>
-        <div class="home-panels">
-          <div class="panel home-panel" id="createPanel">
-            <div class="panel-head"><div class="mini-icon purple">👩‍🏫</div><div><h2>O‘qituvchiman</h2><p>Yangi xona ochish</p></div></div>
-            <label for="teamCount">Jamoalar soni</label>
-            <select id="teamCount"><option value="2">2 ta jamoa</option><option value="3" selected>3 ta jamoa</option></select>
-            <button id="createBtn" class="btn btn-primary full">🚀 Xona yaratish</button>
-          </div>
-          <div class="panel home-panel" id="joinPanel">
-            <div class="panel-head"><div class="mini-icon orange">🎮</div><div><h2>O‘quvchiman</h2><p>Do‘stlar bilan o‘ynash</p></div></div>
-            <label for="roomInput">Xona havolasi yoki kodi</label>
-            <input id="roomInput" type="text" placeholder="Havolani yoki kodni kiriting" autocomplete="off" />
-            <button id="goJoinBtn" class="btn btn-secondary full">➡️ Xonaga kirish</button>
-          </div>
-        </div>
-      </div>
-      <div class="hero-art" aria-hidden="true">
-        <div class="art-orbit orbit-1"></div><div class="art-orbit orbit-2"></div>
-        <div class="hero-star star1">⭐</div><div class="hero-star star2">💎</div><div class="hero-star star3">⚡</div>
-        <div class="art-main"><div class="big-trophy">🏆</div><strong>GAME ON!</strong><small>LEVEL UP TOGETHER</small></div>
-        <div class="floating-score"><span>🔴 Qizillar</span><b>120</b></div>
-        <div class="floating-score score-bottom"><span>🔵 Ko‘klar</span><b>100</b></div>
-      </div>
-    </section>
-
-    <section id="joinScreen" class="join-screen hidden">
-      <div class="panel join-card">
-        <div class="join-illustration">🎮</div>
-        <span class="eyebrow">O‘YINGA XUSH KELIBSIZ!</span>
-        <h1>Ismingizni yozing</h1>
-        <p>Ismingiz jamoa a’zolari va natijalar jadvalida ko‘rinadi.</p>
-        <label for="nickname">Ismingiz (yoki taxallusingiz)</label>
-        <input id="nickname" maxlength="18" placeholder="Masalan, Aziz" autocomplete="nickname" />
-        <button id="joinBtn" class="btn btn-primary full">🎯 O‘yinga qo‘shilish</button>
-        <div class="room-hint" id="joinRoomHint"></div>
-        <button id="backBtn" class="text-btn">← Orqaga qaytish</button>
-      </div>
-    </section>
-
-    <section id="gameScreen" class="game-screen hidden">
-      <div class="room-header panel">
-        <div><span class="eyebrow">🔴 JONLI XONA</span><h1>Jamoaviy o‘yin maydoni</h1><p id="roomStatus">Xona tayyor</p></div>
-        <div class="room-actions"><button class="btn btn-ghost" id="copyBtn">🔗 Havolani nusxalash</button><button class="btn btn-ghost" id="leaveBtn">Chiqish</button></div>
-      </div>
-      <div class="score-strip" id="scoreboard"></div>
-      <div class="layout-grid">
-        <div class="game-content">
-          <section class="panel play-panel">
-            <div id="lobbyView" class="lobby-view"><div class="giant-icon">🎉</div><h2>Hamma tayyormi?</h2><p>O‘qituvchi o‘yinni boshlaguncha kuting. Do‘stlaringizni havola orqali taklif qiling!</p><div class="waiting-dots"><i></i><i></i><i></i></div></div>
-            <div id="quizView" class="hidden">
-              <div class="round-top"><span class="mode-tag">🧠 AQL MAYDONI</span><span id="quizProgress" class="subtle">1 / 12</span></div>
-              <div class="timer-wrap"><span>Qolgan vaqt</span><strong id="quizTimer">20s</strong></div>
-              <h2 class="question" id="questionText"></h2>
-              <div class="answer-grid" id="answers"></div>
-              <p class="help-text" id="answerInfo">Javobni tanlang!</p>
-            </div>
-            <div id="arenaView" class="hidden">
-              <div class="round-top"><span class="mode-tag">⭐ YULDUZLAR ARENASI</span><span id="arenaTimer" class="subtle">90s</span></div>
-              <p class="arena-tip">Yulduzga yetib boring: har bir yulduz = <strong>2 ball</strong>. WASD / strelkalar yoki pastdagi tugmalardan foydalaning.</p>
-              <div id="arenaBoard" class="arena-board" aria-label="Harakatli o‘yin maydoni"></div>
-              <div id="dpad" class="dpad">
-                <button type="button" class="direction up" data-move="up" aria-label="Yuqoriga">▲</button>
-                <button type="button" class="direction left" data-move="left" aria-label="Chapga">◀</button>
-                <button type="button" class="direction down" data-move="down" aria-label="Pastga">▼</button>
-                <button type="button" class="direction right" data-move="right" aria-label="O‘ngga">▶</button>
-              </div>
-            </div>
-            <div id="finishedView" class="finish-view hidden"><div class="giant-icon">🏆</div><span class="eyebrow">BOSQICH TUGADI</span><h2 id="winnerText">Barakalla!</h2><p>O‘qituvchi keyingi bosqichni boshlashi mumkin.</p></div>
-          </section>
-          <section id="adminPanel" class="panel admin-panel hidden">
-            <div class="admin-header"><div><span class="eyebrow">👩‍🏫 O‘QITUVCHI PANELI</span><h3>O‘yinni boshqarish</h3></div><span class="admin-chip">ADMIN</span></div>
-            <div class="admin-buttons"><button id="startQuizBtn" class="btn btn-primary">🧠 Viktorina boshlash</button><button id="nextQuestionBtn" class="btn btn-secondary hidden">Keyingi savol →</button><button id="startArenaBtn" class="btn btn-orange">⭐ Arena boshlash</button><button id="finishBtn" class="btn btn-ghost">🏁 Bosqichni tugatish</button><button id="resetBtn" class="btn btn-ghost">↻ Ballarni tozalash</button></div>
-            <p class="admin-note">O‘quvchilar avtomatik jamoalarga ajratiladi. Viktorina va arena ballari qo‘shib hisoblanadi.</p>
-          </section>
-        </div>
-        <aside class="side-content">
-          <section class="panel people-panel"><div class="side-title"><h3>👥 Qatnashchilar</h3><span class="count-pill" id="playerCount">0</span></div><div id="playersList" class="players-list"></div></section>
-          <section class="panel instruction-panel"><h3>💡 Qanday o‘ynaladi?</h3><p><b>Viktorina:</b> savollarga to‘g‘ri javob berib 10 ball oling.</p><p><b>Arena:</b> rangli belgini boshqarib yulduzlar yig‘ing.</p><p><b>G‘alaba:</b> eng ko‘p ball olgan jamoa yutadi.</p></section>
-        </aside>
-      </div>
-    </section>
-  </main>
-  <footer class="footer shell">SysOne Academy · O‘rganish ham o‘yin bo‘lishi mumkin ✨</footer>
-  <div id="toast" class="toast" role="status" aria-live="polite"></div>
 </body>
 </html>
