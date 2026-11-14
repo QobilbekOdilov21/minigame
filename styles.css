@@ -22,3 +22,7 @@
 .game-vignette{pointer-events:none;opacity:.25}
 .puzzle-choice{transition:background .12s ease,border-color .12s ease;touch-action:manipulation}
 @media(max-width:700px){.hud-weapon-visual{height:53px}.gun-silhouette{height:48px}.fps-indicator{font-size:9px!important}.shop-item-icon .gun-silhouette{width:100px;height:42px}}
+
+/* Gameplay rendering performance: static grain overlay is not composited during matches. */
+body.playing-game .grain{display:none}
+#gameCanvas{will-change:contents;contain:layout paint}
