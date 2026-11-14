@@ -1,63 +1,53 @@
-# MAZE CLASH // Shadow Protocol
+# MAZE CLASH // Shadow Protocol 2.0
 
-SysOne Academy uchun 2D top-down multiplayer labirint o'yini. Frontend **HTML, CSS, Canvas va JavaScript**, xonalar uchun **PeerJS (host-brauzer authoritative)** ishlatiladi. Real pulli to'lov, akkaunt yoki API kaliti talab qilinmaydi.
+**SysOne Academy** — 5-sinf o‘quvchilari uchun ko‘p o‘yinchili 2D tactical maze, shooter va IT jumboqlar platformasi.
 
-## O'yinni boshlash
+## O‘ynash
 
-**O'yin:** https://qobilbekodilov21.github.io/minigame/
+- `https://qobilbekodilov21.github.io/minigame/`
+- Host **XONA YARATISH** → rejim, vaqt, jonlar, raundlar, xarita, o‘q va **maxluqlar** sonini tanlaydi.
+- Mehmonlar xona havolasini ochib ism kiritadi, host matchni boshlaydi.
+- **Team Clash** (2 jamoa), **FFA**, **Secret Agent**, **Maze Escape**, **Double Agent**.
 
-1. O'qituvchi sahifani ochib **XONA YARATISH** ni bosadi, rejim, vaqt, hayot, raund va labirint hajmini tanlaydi.
-2. Yaratilgan xona havolasini o'quvchilarga beradi.
-3. O'quvchilar havoladan kirib, o'z ismlarini kiritadi.
-4. Host **MATCHNI BOSHLASH** ni bosadi. Barcha mijozlar xaritani va o'zlariga ruxsat etilgan o'yin holatini oladi.
-5. Host sahifasi ochiq va internetga ulangan bo'lishi shart.
+## Yangiliklar
 
-## Rejimlar
-
-- **TEAM CLASH:** 2 ta tengroq jamoa, qizillar / ko'klar, cheklangan o'q va data-core qurilmasi (E bilan o'rnatish/zararsizlantirish).
-- **FREE FOR ALL:** hamma o'zi uchun, har bir o'yinchi turlicha rangda.
-- **SECRET AGENT:** maxfiy xoin, jumboqli topshiriqlar, sabotaj, yig'ilish, chat, ovoz berish. Rejim kamida 4 o'yinchini talab qiladi va 1 jonli ishlaydi.
-- **MAZE ESCAPE:** uchta kod-parcha topish, chiqish portaliga yetish.
-- **DOUBLE AGENT:** 2 jamoa; har tomonda sirli xoin. Maxsus sabotaj qobiliyati mavjud.
-
-## Mexanikalar
-
-- Labirint match boshida seed asosida qayta hosil bo'ladi. Ko'rinish 7 katak atrofida, devorlar orti berkitilgan, server raqiblarni yashirishda filtr ishlatadi.
-- Pistol, SMG, rifle, shotgun, sniper; magazin va zaxira o'qlar; otish tezligi, tarqalish, zarba kuchi, reload.
-- Inventar do'koni: qurol, o'q, medkit, armor, scanner, smoke, stamina, master key.
-- Kredit: dastlab beriladi, raqibni yengish, jumboq yechish va sandiqlardan topiladi.
-- Raqib yo'q qilinganda qurol, qolgan patron va krediti tushgan loot sifatida olinadi.
-- Mag'lubiyat: rangli kubchalarga parchalanish (canvas particle effects), qolgan jon bo'lsa qayta paydo bo'lish, aks holda spectator.
-- Puzzles, eshik kalitlari, sirli terminallar, smoke va oxirgi daqiqadagi taxminiy radar.
-- Mobil joystik, o't ochish, olish, reload, maxsus qobiliyat, yig'ilish tugmalari.
+- **Night-vision** kayfiyatidagi chizilgan 3D-ish devorlar, pol qoplamalari, chiroqlar va yoritilgan zonalar.
+- O‘yinchi oldiga yo‘nalgan, devorlardan o‘tmaydigan **fonar konusi**; lampalar yonidagi dushmanlar ham ko‘rinadi.
+- Mayda piksellardan yig‘ilgan ikki oyoqli, qo‘lli, qurol ushlagan **pixel-personaj**.
+- **Mouse** kursori orqali nishonga olish va **chap tugmani ushlab otish**; boshqa joyga bosilganda otmaydi.
+- `requestAnimationFrame` render, yengillashtirilgan canvas piksellari va 5-frame minimap intervali; yuqorida **haqiqiy joriy FPS** ko‘rsatiladi. Maqsad 60 FPS, qurilma/ekranga qarab pasayishi mumkin.
+- Qurol uchun aniq **SVG siluetlar** do‘konda va HUD’da, o‘q, reload, kredit, xarid, raqib loot va kubchalarga bo‘linish effektlari.
+- **1 000 ta** offline, 4 variantli, 5-sinfga mos o‘zbekcha IT savollar: qurilmalar, xavfsizlik, Scratch, klaviatura, algoritm, ikkilik sanoq, fayllar, bit/bayt.
+- **O‘yin savolni tekshiradi:** noto‘g‘rida yangi tasodifiy savol chiqadi (20 kredit jarima), to‘g‘rida **mukofot sandig‘i** tushadi. `[E]` bilan sandiqni oching va tasodifiy qurol/o‘q/zirh/kredit/medkit va boshqa resursni oling.
+- Bitta match davomida oldingi savollar qayta chiqmasligi uchun markaziy savollar tarixidan foydalaniladi.
+- **Maxluqlar:** o‘chirish / 4 ta / 8 ta / 15 ta. AI labirint bo‘ylab o‘yinchiga yaqinlashadi, hujum qiladi, o‘ldirilganda loot qoldiradi.
 
 ## Boshqaruv
 
-| Tugma | Amal |
-| --- | --- |
-| W/A/S/D yoki strelkalar | Yurish |
-| Shift | Tez yurish (stamina) |
-| Sichqoncha + chap tugma | Nishonga olish va otish |
-| R | Qayta o'qlash |
-| E | Resursni olish / jumboq / qulf / data core / portal |
-| B | Do'kon |
-| 1–5 | Qurol almashtirish |
-| H | Medkit ishlatish |
-| Q | Maxsus qobiliyat (Secret / Double Agent) |
-| M | Secret Agent yig'ilishi |
-| Tab yoki Roster | Natijalar |
+| Amal | Kompyuter |
+|---|---|
+| Harakat | WASD yoki o‘q tugmalari |
+| Nishon | Sichqoncha harakati |
+| Otish | **Sichqoncha chap tugmasi** (ushlab turish) |
+| Qayta o‘qlash | R |
+| Interact / terminal / sandiq / loot | E |
+| Do‘kon | B |
+| Qo‘shimcha qobiliyat | Q |
+| Medkit | H |
+| Qurol tanlash | 1–5 |
+| Hisob | Tab |
+| Secret Agent yig‘ilishi | M |
 
-## Joylashtirish
+Telefon: virtual joystick va ekrandagi tugmalar.
 
-Repository'ning `main` branchidagi `index.html`, `styles.css` va `game.js` fayllari GitHub Pages `/(root)` dan tarqatiladi. Hech qanday npm build talab qilinmaydi.
+## Fayllar
 
-## Muhim cheklovlar
+- `index.html` — barcha ekranlar va semantik HTML.
+- `styles.css` — moslashuvchan qorong‘i interfeys.
+- `game.js` — host boshqaruvchi o‘yin dvigateli, vizual render va PeerJS multiplayer.
+- `quiz-bank.js` — tekshirilgan **1000 ta** savollar bazasi.
+- `build_questions.py` — savollar bazasini qayta yaratish uchun deterministik generator.
 
-- **PeerJS ommaviy signaling xizmati** ishlatiladi. Host sahifasi yopilsa, match ishlamaydi. Bu **kichik yopiq guruhlar uchun sinov arxitekturasi**; 20–30 nafar o'quvchining barqaror online matchlari va haqiqiy server-side anti-cheat uchun alohida WebSocket game-server (masalan, Node.js + ws / Colyseus) zarur.
-- PeerJS host ulanishi va Google Fonts uchun internet talab qilinadi. VPN/firewall yoki brauzer kengaytmalari WebRTCni bloklashi mumkin.
-- Bu soddalashtirilgan brauzer o'yini, to'liq Counter-Strike yoki Among Us nusxasi emas. Ovozli chat, real multiplayer performance benchmark, akkauntlar, mukammal reconnect, to'liq anti-cheat va reytinglar serverda saqlanishi hozircha yo'q.
-- Chatni faqat sinfingizdagi ishonchli o'quvchilar bilan ulashing. Ism va xabarlar serverdagi database'ga yozilmaydi.
+GitHub Pages statik hosting uchun. PeerJS Cloud signalizatsiya va brauzerlar orasida P2P aloqani ta’minlaydi. O‘qituvchi sahifani yopsa match tugaydi. Maktabning sust tarmog‘ida yoki NAT/firewall ortida ulanish ishlamasligi mumkin; 20–30 qurilmali barqaror o‘yin uchun WebSocket serveri va serverda o‘yin holati boshqaruvini tavsiya qilamiz.
 
----
-
-© SysOne Academy. Original HTML5 browser game.
+Darsda ishlatish uchun sinfda avval 2 qurilma bilan sinovdan o‘tkazing. O‘yin ichidagi kreditlar haqiqiy pul emas.
