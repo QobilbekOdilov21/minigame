@@ -2,6 +2,7 @@
 <html lang="uz">
 <head>
   <meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22%3E%3Crect width=%2264%22 height=%2264%22 rx=%2215%22 fill=%22%237b61ff%22/%3E%3Ctext x=%2232%22 y=%2247%22 font-size=%2243%22 font-family=%22Arial%22 font-weight=%22bold%22 text-anchor=%22middle%22 fill=%22white%22%3ES%3C/text%3E%3C/svg%3E"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="theme-color" content="#111327" />
   <meta name="description" content="SysOne Academy: sinf uchun jamoaviy, jonli viktorina va harakatli arena o'yini." />
@@ -629,7 +630,11 @@ function init() {
   if (room) navigateToJoin(room);
   else showScreen('homeScreen');
 }
-init();
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', init, { once: true });
+} else {
+  init();
+}
 
 </script>
 </head>
